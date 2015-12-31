@@ -2,10 +2,11 @@
 #include<stdlib.h>
 #include<limits.h>
 
-typedef struct{
+typedef struct Node node;
+typedef struct Node{
     int data;
-    struct node* lft;
-    struct node* rgt;
+    struct Node* lft;
+    struct Node* rgt;
 }node;
 
 
