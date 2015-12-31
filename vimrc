@@ -4,7 +4,9 @@ set softtabstop=4
 set expandtab
 set shiftwidth=4
 set ruler
-
+set textwidth=79
+set autoindent
+set fileformat=unix
 
 set nonu
 set showcmd
