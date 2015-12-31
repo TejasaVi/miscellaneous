@@ -1,6 +1,4 @@
-#include<stdio.h>
-#include<limits.h>
-
+#include "bit_ops.h"
 /*
 Compute integer absolute value without branching
 */
