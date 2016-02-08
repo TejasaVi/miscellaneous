@@ -1,6 +1,6 @@
 #include "binTree.h"
 
-
+/*Insert NOde to a BST*/
 node* insert(node*R, int data)
 {
     if(R == NULL)
@@ -15,12 +15,14 @@ node* insert(node*R, int data)
     return R;
 }
 
-
+/*Gets a maximum Value from the BST */
 int MaxValue(node* R)
 {
     return R->data;
 }
 
+
+/*Gets a minimum Value from the BST */
 int Minvalue(node* R)
 {
     node* current = R;
@@ -29,9 +31,12 @@ int Minvalue(node* R)
     return current->data;
 }
 
-int ceil(R, int key)
+
+/*Gets a ceiling Value from BST for given key */
+int ceil(node* R, int key)
 {
 }
+
 
 int main()
 {

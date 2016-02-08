@@ -1,5 +1,5 @@
 #include "binTree.h"
-
+/*
 node* getParentfor(node* root, int data){
     node* tmp;
     if(root == NULL)
@@ -19,6 +19,17 @@ node* getParentfor(node* root, int data){
     }
     return root;
 }
+
+node* getSiblingfor()
+{
+
+}
+
+int getNodeData(node* current)
+{
+}
+*/
+
 void insertLeftChild(node* parent, int data)
 {
     node* temp;
