@@ -24,12 +24,30 @@ t1 = datetime.now()
 # We also put in some error handling for catching errors
 
 try:
-    for port in range(1,1025):  
+    print "Scanning well known 1 through 1023 ports:"
+    for port in range(1,1023):  
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         result = sock.connect_ex((remoteServerIP, port))
         if result == 0:
             print "Port {}: 	 Open".format(port)
         sock.close()
+    
+    print "Scanning Registered Ports: 1024 through 49151 ports:"
+    for port in range(1024, 49151):  
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        result = sock.connect_ex((remoteServerIP, port))
+        if result == 0:
+            print "Port {}: 	 Open".format(port)
+        sock.close()
+    
+    print "Scanning Dynamic/Private : 49152 through 65535 ports:"
+    for port in range(49152, 65535):  
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        result = sock.connect_ex((remoteServerIP, port))
+        if result == 0:
+            print "Port {}: 	 Open".format(port)
+        sock.close()
+    
 
 except KeyboardInterrupt:
     print "You pressed Ctrl+C"
