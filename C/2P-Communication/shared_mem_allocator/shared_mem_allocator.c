@@ -42,15 +42,3 @@ void s_mem_destroy(char name[])
 	if(shm_unlink(name) == -1)
 		error("shm_unlink");
 }
-
-int main()
-{
-	uuid_t uuid;
-	uuid_generate_time_safe(uuid);
-	char uuid_str[37];
-	uuid_unparse_lower(uuid, uuid_str);
-
-	s_mem_alloc(NULL, 1);
-	s_mem_alloc(uuid_str, 1);
-	return 0;
-}
