@@ -1,0 +1,21 @@
+[liveuser@localhost-live queue]$ ls
+Makefile  queue.c  queue.h  runnable.c
+[liveuser@localhost-live queue]$ make
+cc -Wall -c queue.c
+cc runnable.c queue.o -o runnable
+[liveuser@localhost-live queue]$ ./runnable 3
+Initialized New Queue
+Inserting data into the Queue
+Inserting data into the Queue
+Inserting data into the Queue
+Queue is Full
+Element at the front = [10]
+[10] [20] [30] 
+Removed element : [10]
+[20] [30] 
+Removed element : [20]
+[30] 
+Removed element : [30]
+
+No elements to dequeue
+Removed element : [-1]
