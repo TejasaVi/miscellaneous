@@ -1,4 +1,4 @@
-#include "binTree.h"
+#include "bin_tree.h"
 
 /*Insert NOde to a BST*/
 node* insert(node*R, int data)
@@ -33,8 +33,9 @@ int Minvalue(node* R)
 
 
 /*Gets a ceiling Value from BST for given key */
-int ceil(node* R, int key)
+int peek_ceil(node* R, int key)
 {
+    return 0;
 }
 
 
