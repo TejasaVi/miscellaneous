@@ -4,6 +4,7 @@ import sys
 import pprint
 
 class FSanalytics(object):
+class FS(object):
     def __init__(self, name):
         self.name = name
 
@@ -23,6 +24,7 @@ class FSanalytics(object):
 
     def get_file_stats(self, path=None):
         files = {}
+        data = {}
         if path is None:
             path = self.name
         for filename in os.listdir(path):
@@ -34,6 +36,14 @@ class FSanalytics(object):
                 files[filename]['type'] = 'dir'
             else:
                 files[filename]['type'] = ['link']
+        """
+        for root, dirs, files in os.walk(path):
+            #import pdb;pdb.set_trace()
+            data[root] = {}
+            data[root]['dirs'] = dirs
+            data[root]['files'] = files
+        return data
+        """
         return files
 
     def get_dir_stats(self, path=None):
@@ -70,5 +80,5 @@ def posix2dict(stats):
     d['st_ctime'] = stats.st_ctime
     return d
 
-fs = FSanalytics(sys.argv[1])
-pprint.pprint(fs.get_dir_stats())
+fs = FS(sys.argv[1])
+pprint.pprint(fs.get_file_stats())
