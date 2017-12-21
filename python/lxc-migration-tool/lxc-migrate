@@ -25,6 +25,8 @@ Arguement Options:
 -u, --user (remote host user)
 
 """
+
+
 class ContainerMigrator(object):
     def __init__(self, d):
         for key in d:
@@ -62,87 +64,104 @@ class ContainerMigrator(object):
         self._ssh_client = paramiko.SSHClient()
         self._ssh_client.load_system_host_keys()
         self._ssh_client.set_missing_host_key_policy(paramiko.WarningPolicy)
-        self._ssh_client.connect(self.remote_host, port=22, username=self.user, password=self.passwd)
+        self._ssh_client.connect(
+            self.remote_host, port=22, username=self.user, password=self.passwd)
         self._sftp = self._ssh_client.open_sftp()
 
-    def _archive_container(self,path=None):
-	try:
-	    if not path:
-		# TODO: get absolute path
-		path = "$HOME/.local/share/lxc/{0}".format(self.name)
-	    cmd = "tar --numeric-owner -czvf {0}.tar.gz {1}/*".format(self.name, path)
-	    self._exec_cmd(cmd)
-	    #self.__setattr__('tarfile',"{0}.tar.gz".format(self.name))
+    def _archive_container(self, path=None):
+        try:
+            if not path:
+                # TODO: get absolute path
+                path = "$HOME/.local/share/lxc/{0}".format(self.name)
+            cmd = "tar --numeric-owner -czvf {0}.tar.gz {1}/*".format(
+                self.name, path)
+            self._exec_cmd(cmd)
             self.tarfile = "{0}.tar.gz".format(self.name)
-
-	except Exception as e:
-	    raise
+        except Exception as e:
+            raise
 
     def _exec_cmd(self, cmd, remote=False):
-	if remote:
-	    print "[Remote]:{0}".format(cmd)
-	    ret = {}
-	    #exit_code, stdout, stderr = self._ssh_client.exec_command(cmd)
-	    #ret = {"exit_code":stdout.channel.recv_exit_status(),"stdout": stdout.read(), "stderr": stderr.read()}
-	    return ret
-	cmd_args = cmd.split()
-	print cmd_args
-	proc = subprocess.Popen(cmd_args,stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-	stdoutdata, stderrdata = proc.communicate()
-	exit_code = proc.wait()
-	ret = {"exit_code":exit_code,"stdout": stdoutdata, "stderr": stderrdata}
-	return ret
+        if remote:
+            print "[Remote]:{0}".format(cmd)
+            ret = {}
+            stdin, stdout, stderr = self._ssh_client.exec_command(cmd)
+            ret = {"exit_code": stdout.channel.recv_exit_status(
+            ), "stdout": stdout.read(), "stderr": stderr.read()}
+            return ret
+        cmd_args = cmd.split()
+        print cmd_args
+        proc = subprocess.Popen(
+            cmd_args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        stdoutdata, stderrdata = proc.communicate()
+        exit_code = proc.wait()
+        ret = {"exit_code": exit_code,
+               "stdout": stdoutdata, "stderr": stderrdata}
+        return ret
 
     def _copy_remote(self):
-	try:
-	    self._sftp.put(self.tarfile, "/tmp/{0}".format(self.tarfile))
-	except Exception as e:
-	    raise
+        try:
+            cmd = "echo $HOME"
+            self.remote_home = ret["stdout"]
+            ret = self._exec_cmd(cmd, remote=True)
+            self._sftp.put(self.tarfile, self.remote_home +
+                           "/.local/share/lxc/")
+        except Exception as e:
+            raise
 
     def _remote_extract(self):
-	try:
-	    # create a directory
-	    cmd = "mkdir $HOME/.local/share/lxc/{0}".format(self.name)
-	    self._exec_cmd(cmd, remote=True)
-	    # change ownership of directory
-	    cmd = "chown 100000:$USER $HOME/.local/share/lxc/{0}".format(self.name)
-	    self._exec_cmd(cmd, remote=True)
-	    # untar container.
-	    cmd = "tar --numeric-owner -xzvf {0} $HOME/.local/share/lxc/{1}".format(self.tarfile, self.name)
-	    self._exec_cmd(cmd, remote=True)
-	except Exception as e:
-	    raise
+        try:
+            # create a directory
+            cmd = "mkdir {0}/.local/share/lxc/{1}".format(
+                self.remote_home, self.name)
+            self._exec_cmd(cmd, remote=True)
+            # change ownership of directory
+            cmd = "chown 100000:$USER {0}/.local/share/lxc/{1}".format(
+                self.remote_home, self.name)
+            self._exec_cmd(cmd, remote=True)
+            # untar container.
+            cmd = "tar --numeric-owner -xzvf {0} {1}/.local/share/lxc/{2}".format(
+                self.tarfile, self.remote_home, self.name)
+            self._exec_cmd(cmd, remote=True)
+        except Exception as e:
+            raise
 
     def _stop_container(self):
-	try:
-	    cmd = "lxc-stop -n {0}".format(self.name)
-	    self._exec_cmd(cmd)
-	except Exception as e:
-	    raise
+        try:
+            cmd = "lxc-stop -n {0}".format(self.name)
+            self._exec_cmd(cmd)
+        except Exception as e:
+            raise
 
     def _remote_start_container(self):
-	try:
-	    cmd = "lxc-start -n {0}".format(self.name)
-	    self._exec_cmd(cmd, remote=True)
-	except Exception as e:
-	    raise
+        try:
+            cmd = "lxc-start -n {0}".format(self.name)
+            self._exec_cmd(cmd, remote=True)
+        except Exception as e:
+            raise
 
 
 def add_options(parser):
     try:
-        parser.add_argument("-n", "--name", required='True', help="Container Name to migrate")
-        parser.add_argument("-u", "--user", required='True', help="Remote Host Username")
+        parser.add_argument("-n", "--name", required='True',
+                            help="Container Name to migrate")
+        parser.add_argument("-u", "--user", required='True',
+                            help="Remote Host Username")
         parser.add_argument("-p", "--path", help="Container RootFS path")
-        parser.add_argument("-a", "--auto-start", action='store_false', default=False, help="Flag to auto start container on remote host")
-        parser.add_argument("-r", "--remote_host", required='True', help="Remote Host IP")
+        parser.add_argument("-a", "--auto-start", action='store_false',
+                            default=False, help="Flag to auto start container on remote host")
+        parser.add_argument("-r", "--remote_host",
+                            required='True', help="Remote Host IP")
     except Exception as e:
         raise
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     add_options(parser)
     args = vars(parser.parse_args())
-    args['passwd'] = getpass.getpass() if not passwd else args.__setattr__("passwd", passwd)
+    args['passwd'] = getpass.getpass(
+    ) if not passwd else args.__setattr__("passwd", passwd)
     cm = ContainerMigrator(args)
-    import pdb;pdb.set_trace()
+    import pdb
+    pdb.set_trace()
     cm.cold_migrate()
