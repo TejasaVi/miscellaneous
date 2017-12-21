@@ -1,0 +1,132 @@
+#!/bin/python
+
+import argparse
+import getpass
+import paramiko
+import subprocess
+
+try:
+    import lxc
+    lxc_installed = True
+except ImportError, e:
+    lxc_installed = False
+    pass
+
+
+passwd = ""
+
+"""
+Arguement Options:
+-h, --help
+-n, --name
+-r, --remote_host
+-p, --path (optional)
+-a, --auto-start (optional)
+-u, --user (remote host user)
+
+"""
+
+def get_ssh_client(args):
+    client = paramiko.SSHClient()
+    client.load_system_host_keys()
+    client.set_missing_host_key_policy(paramiko.WarningPolicy)
+    client.connect(args.remote_host, port=22, username=args.user, password=args.passwd)
+    sftp = client.open_sftp()
+    args.__setattr__("client",client)
+    args.__setattr__("sftp", sftp)
+
+def exec_cmd(cmd, args, remote=False):
+    if remote:
+        print "[Remote]:{0}".format(cmd)
+        ret = {}
+        #exit_code, stdout, stderr = args.client.exec_command(cmd)
+        #ret = {"exit_code":stdout.channel.recv_exit_status(),"stdout": stdout.read(), "stderr": stderr.read()}
+        return ret
+    cmd_args = cmd.split()
+    print cmd_args
+    proc = subprocess.Popen(cmd_args,stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    stdoutdata, stderrdata = proc.communicate()
+    exit_code = proc.wait()
+    ret = {"exit_code":exit_code,"stdout": stdoutdata, "stderr": stderrdata}
+    return ret
+
+def cleanup(args):
+    args.sftp.close()
+    args.client.close()
+
+"""---------------------------------------------------------------------"""
+"""                         Basic Functions                             """
+"""---------------------------------------------------------------------"""
+# Shutdown Container
+def shutdown_container(args):
+    try:
+        cmd = "lxc-stop -n {0}".format(args.name)
+        exec_cmd(cmd, args)
+    except Exception as e:
+        raise
+
+# Archive container
+def archive_container(args,path=None):
+    try:
+        if not path:
+            # TODO: get absolute path
+            path = "$HOME/.local/share/lxc/{0}".format(args.name)
+        cmd = "tar --numeric-owner -czvf {0}.tar.gz {1}/*".format(args.name, path)
+        exec_cmd(cmd, args)
+        args.__setattr__('tarfile',"{0}.tar.gz".format(args.name))
+    except Exception as e:
+        raise
+
+# Copy container image to remote host
+def copy_remote(args):
+    try:
+        args.sftp.put(args.tarfile, ".local/share/lxc/")
+    except Exception as e:
+        raise
+
+# Extract rootfs at remote location
+def extract_container(args):
+    try:
+        # create a directory
+        cmd = "mkdir $HOME/.local/share/lxc/{0}".format(args.name)
+        exec_cmd(cmd, args, remote=True)
+        # change ownership of directory
+        cmd = "chown 100000:$USER $HOME/.local/share/lxc/{0}".format(args.name)
+        exec_cmd(cmd, args, remote=True)
+        # untar container.
+        cmd = "tar --numeric-owner -xzvf {0} $HOME/.local/share/lxc/{1}".format(args.tarfile, args.name)
+        exec_cmd(cmd, args, remote=True)
+    except Exception as e:
+        raise
+
+# Start the container
+def start_container(args):
+    try:
+        cmd = "lxc-start -n {0}".format(args.name)
+        exec_cmd(cmd, args, remote=True)
+    except Exception as e:
+        raise
+
+def add_options(parser):
+    try:
+        parser.add_argument("-n", "--name", required='True', help="Container Name to migrate")
+        parser.add_argument("-u", "--user", required='True', help="Remote Host Username")
+        parser.add_argument("-p", "--path", help="Container RootFS path")
+        parser.add_argument("-a", "--auto-start", action='store_false', default=False, help="Flag to auto start container on remote host")
+        parser.add_argument("-r", "--remote_host", required='True', help="Remote Host IP")
+    except Exception as e:
+        raise
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    add_options(parser)
+    parser.parse_args()
+    args = parser.parse_args()
+    args.__setattr__("passwd", getpass.getpass()) if not passwd else args.__setattr__("passwd", passwd)
+    get_ssh_client(args)
+    """ Container Miragtion Begins """
+    shutdown_container(args)
+    archive_container(args)
+    #copy_remote(args)
+    extract_container(args)
+    start_container(args)
