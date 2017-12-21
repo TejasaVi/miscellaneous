@@ -26,25 +26,20 @@ Arguement Options:
 
 """
 class ContainerMigrator(object):
-    def __init__(self, d):
-        for key in d:
-            setattr(self, key, d[key])
-        self.__get_ssh_client()
+    def __init__(self):
+        self._ssh_client = ""
+        self._sftp = ""
+        return
 
     def cleanup(self):
         self._sftp.close()
         self._ssh_client.close()
 
     def cold_migrate(self):
-        try:
-            self._stop_container()
-            self._archive_container()
-            self._copy_remote()
-            self._remote_extract()
-            if self.auto_start:
-                self._remote_start_container()
-        except Exception as e:
-            print e
+        return
+
+    def live_migrate(self):
+        return
 
     def live_migrate(self):
         return
@@ -55,10 +50,7 @@ class ContainerMigrator(object):
     def clone_migrate(self):
         return
 
-    def __setpass__(self, passwd):
-        self.passwd = passwd
-
-    def __get_ssh_client(self):
+    def _get_ssh_client(self):
         self._ssh_client = paramiko.SSHClient()
         self._ssh_client.load_system_host_keys()
         self._ssh_client.set_missing_host_key_policy(paramiko.WarningPolicy)
@@ -95,7 +87,7 @@ class ContainerMigrator(object):
 
     def _copy_remote(self):
 	try:
-	    self._sftp.put(self.tarfile, "/tmp/{0}".format(self.tarfile))
+	    self._sftp.put(self.tarfile, ".local/share/lxc/")
 	except Exception as e:
 	    raise
 
@@ -113,17 +105,10 @@ class ContainerMigrator(object):
 	except Exception as e:
 	    raise
 
-    def _stop_container(self):
-	try:
-	    cmd = "lxc-stop -n {0}".format(self.name)
-	    self._exec_cmd(cmd)
-	except Exception as e:
-	    raise
-
     def _remote_start_container(self):
 	try:
 	    cmd = "lxc-start -n {0}".format(self.name)
-	    self._exec_cmd(cmd, remote=True)
+	    exec_cmd(cmd, self, remote=True)
 	except Exception as e:
 	    raise
 
@@ -142,7 +127,5 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     add_options(parser)
     args = vars(parser.parse_args())
-    args['passwd'] = getpass.getpass() if not passwd else args.__setattr__("passwd", passwd)
-    cm = ContainerMigrator(args)
     import pdb;pdb.set_trace()
-    cm.cold_migrate()
+    #args.__setattr__("passwd", getpass.getpass()) if not passwd else args.__setattr__("passwd", passwd)
