@@ -2,6 +2,7 @@
 
 import argparse
 import getpass
+import os
 import paramiko
 import subprocess
 
@@ -72,39 +73,34 @@ class ContainerMigrator(object):
         try:
             if not path:
                 # TODO: get absolute path
-                path = "$HOME/.local/share/lxc/{0}".format(self.name)
+                path = "{0}/.local/share/lxc/{1}".format(os.environ["HOME"], self.name)
             cmd = "tar --numeric-owner -czvf {0}.tar.gz {1}/*".format(
-                self.name, path)
-            self._exec_cmd(cmd)
-            self.tarfile = "{0}.tar.gz".format(self.name)
+                    self.name, path)
+            ret = self._exec_cmd(cmd)
+            self.tarfile = os.path.abspath("{0}.tar.gz".format(self.name))
         except Exception as e:
             raise
 
     def _exec_cmd(self, cmd, remote=False):
-        if remote:
-            print "[Remote]:{0}".format(cmd)
-            ret = {}
-            stdin, stdout, stderr = self._ssh_client.exec_command(cmd)
-            ret = {"exit_code": stdout.channel.recv_exit_status(
-            ), "stdout": stdout.read(), "stderr": stderr.read()}
-            return ret
-        cmd_args = cmd.split()
-        print cmd_args
-        proc = subprocess.Popen(
-            cmd_args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        stdoutdata, stderrdata = proc.communicate()
-        exit_code = proc.wait()
-        ret = {"exit_code": exit_code,
-               "stdout": stdoutdata, "stderr": stderrdata}
-        return ret
+        try:
+            if remote:
+                print "[Remote]:{0}".format(cmd)
+                ret = {}
+                stdin, stdout, stderr = self._ssh_client.exec_command(cmd)
+                ret = {"exit_code": stdout.channel.recv_exit_status(
+                ), "stdout": stdout.read(), "stderr": stderr.read()}
+                return ret
+            exit_code = os.system(cmd)
+        except Exception as e:
+            raise
 
     def _copy_remote(self):
         try:
             cmd = "echo $HOME"
-            self.remote_home = ret["stdout"]
             ret = self._exec_cmd(cmd, remote=True)
+            self.remote_home = ret["stdout"].replace("\n","")
             self._sftp.put(self.tarfile, self.remote_home +
-                           "/.local/share/lxc/")
+                           "/.local/share/lxc/{0}.tar.gz".format(self.name))
         except Exception as e:
             raise
 
@@ -115,8 +111,8 @@ class ContainerMigrator(object):
                 self.remote_home, self.name)
             self._exec_cmd(cmd, remote=True)
             # change ownership of directory
-            cmd = "chown 100000:$USER {0}/.local/share/lxc/{1}".format(
-                self.remote_home, self.name)
+            cmd = "chown 100000:{2} {0}/.local/share/lxc/{1}".format(
+                self.remote_home, self.name, self.user)
             self._exec_cmd(cmd, remote=True)
             # untar container.
             cmd = "tar --numeric-owner -xzvf {0} {1}/.local/share/lxc/{2}".format(
@@ -162,6 +158,4 @@ if __name__ == '__main__':
     args['passwd'] = getpass.getpass(
     ) if not passwd else args.__setattr__("passwd", passwd)
     cm = ContainerMigrator(args)
-    import pdb
-    pdb.set_trace()
     cm.cold_migrate()
