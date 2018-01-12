@@ -2,6 +2,7 @@
 
 import argparse
 import getpass
+import logging
 import os
 import paramiko
 import subprocess
@@ -16,6 +17,13 @@ except ImportError, e:
 
 
 passwd = ""
+
+LOG_FILE = "/var/log/lxc-migration.log"
+logger = logging.getLogger("lxc_migrator")
+logger.setLevel(logging.DEBUG)
+fh = logging.FileHandler(LOG_FILE, 'a')
+fh.setLevel(logging.DEBUG)
+logger.addHandler(fh)
 
 """
 Arguement Options:
@@ -84,7 +92,7 @@ class ContainerMigrator(object):
     def _exec_cmd(self, cmd, remote=False):
         try:
             if remote:
-                print "[Remote]:{0}".format(cmd)
+                logger.info("[Remote]:{0}".format(cmd))
                 ret = {}
                 stdin, stdout, stderr = self._ssh_client.exec_command(cmd)
                 ret = {"exit_code": stdout.channel.recv_exit_status(
