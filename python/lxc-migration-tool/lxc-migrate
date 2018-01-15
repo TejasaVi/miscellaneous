@@ -8,6 +8,12 @@ import paramiko
 import subprocess
 import tarfile
 
+passwd = ""
+SSH_PORT = 22
+DEFAULT_PATH = "/.local/share/lxc/"
+LOG_FILE = "lxc-migration.log"
+
+
 try:
     import lxc
     lxc_installed = True
@@ -16,14 +22,13 @@ except ImportError, e:
     pass
 
 
-passwd = ""
-
-LOG_FILE = "/var/log/lxc-migration.log"
 logger = logging.getLogger("lxc_migrator")
 logger.setLevel(logging.DEBUG)
 fh = logging.FileHandler(LOG_FILE, 'a')
 fh.setLevel(logging.DEBUG)
 logger.addHandler(fh)
+logger.info("Logger intialized")
+
 
 """
 Arguement Options:
@@ -38,18 +43,19 @@ Arguement Options:
 
 
 class ContainerMigrator(object):
+
     def __init__(self, d):
         for key in d:
             setattr(self, key, d[key])
         self.__get_ssh_client()
 
     def cleanup(self):
+        logger.debug("Going for cleanup")
         self._sftp.close()
         self._ssh_client.close()
 
     def cold_migrate(self):
         try:
-            #import pdb;pdb.set_trace()
             self._stop_container()
             self._archive_container()
             self._copy_remote()
@@ -57,7 +63,7 @@ class ContainerMigrator(object):
             if self.auto_start:
                 self._remote_start_container()
         except Exception as e:
-            print e
+            logger.debug(e)
 
     def live_migrate(self):
         return
@@ -75,14 +81,17 @@ class ContainerMigrator(object):
         self._ssh_client = paramiko.SSHClient()
         self._ssh_client.load_system_host_keys()
         self._ssh_client.set_missing_host_key_policy(paramiko.WarningPolicy)
+        logger.debug("Using IP: {0} PORT:{1} for ssh connection".format(self.remote_host, SSH_PORT))
         self._ssh_client.connect(
-            self.remote_host, port=22, username=self.user, password=self.passwd)
+            self.remote_host, port=SSH_PORT, username=self.user, password=self.passwd)
         self._sftp = self._ssh_client.open_sftp()
 
     def _archive_container(self, path=None):
         try:
             if not path:
-                path = "{0}/.local/share/lxc/{1}".format(os.environ["HOME"], self.name)
+                path = "{0}{1}{2}".format(
+                    os.environ["HOME"], DEFAULT_PATH, self.name)
+            logger.debug("Container Path: {0}".format(path))
             with tarfile.open(self.name + ".tar.gz", "w:gz") as tar:
                 tar.add(path, arcname=os.path.basename(path))
             self.tarfile = os.path.abspath("{0}.tar.gz".format(self.name))
@@ -99,6 +108,7 @@ class ContainerMigrator(object):
                 ), "stdout": stdout.read(), "stderr": stderr.read()}
                 return ret
             exit_code = os.system(cmd)
+            logger.info("[Local]: {0}".format(cmd))
         except Exception as e:
             raise
 
@@ -106,24 +116,25 @@ class ContainerMigrator(object):
         try:
             cmd = "echo $HOME"
             ret = self._exec_cmd(cmd, remote=True)
-            self.remote_home = ret["stdout"].replace("\n","")
+            self.remote_home = ret["stdout"].replace("\n", "")
             # create a directory
-            cmd = "mkdir {0}/.local/share/lxc/".format(
-                self.remote_home)
+            cmd = "mkdir -p {0}{1}".format(
+                self.remote_home, DEFAULT_PATH)
             self._exec_cmd(cmd, remote=True)
             # change ownership of directory
-            cmd = "chown 100000:{1} {0}/.local/share/lxc/".format(
-                self.remote_home, self.user)
+            cmd = "chown 100000:{1} {0}{2}".format(
+                self.remote_home, self.user, DEFAULT_PATH)
             self._exec_cmd(cmd, remote=True)
             self._sftp.put(self.tarfile, self.remote_home +
-                           "/.local/share/lxc/{0}.tar.gz".format(self.name))
+                           "{0}{1}.tar.gz".format(DEFAULT_PATH, self.name))
         except Exception as e:
             raise
 
     def _remote_extract(self):
         try:
             # untar container.
-            cmd = "cd {0}/.local/share/lxc/; tar --numeric-owner -xzvf {1}.tar.gz".format(self.remote_home, self.name)
+            cmd = "cd {0}{2}; tar --numeric-owner -xzvf {1}.tar.gz".format(
+                self.remote_home, self.name, DEFAULT_PATH)
             self._exec_cmd(cmd, remote=True)
         except Exception as e:
             raise
