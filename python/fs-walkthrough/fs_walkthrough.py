@@ -3,7 +3,7 @@ import os
 import sys
 import pprint
 
-class FSanalytics(object):
+#class FSanalytics(object):
 class FS(object):
     def __init__(self, name):
         self.name = name
