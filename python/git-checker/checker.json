@@ -1,0 +1,14 @@
+{
+	"git":{
+		"host":"asdf",
+		"repo":"/home/tejas/myspace/miscellaneous",
+		"user":"asdf",
+		"passwd":"asdf"
+	},
+	"review-board":{
+		"host":"asdf",
+		"project":"asdf",
+		"user":"asdf",
+		"passwd":"asdf"
+	}
+}

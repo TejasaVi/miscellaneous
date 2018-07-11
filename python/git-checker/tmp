@@ -1,0 +1,11 @@
+Test results:
+>> Issue: [B404:blacklist] Consider possible security implications associated with subprocess module.
+   Severity: Low   Confidence: High
+   Location: <stdin>:59
+
+--------------------------------------------------
+>> Issue: [B602:subprocess_popen_with_shell_equals_true] subprocess call with shell=True seems safe, but may be changed in the future, consider rewriting without shell
+   Severity: Low   Confidence: High
+   Location: <stdin>:60
+
+--------------------------------------------------
