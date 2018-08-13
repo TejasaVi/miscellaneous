@@ -1,5 +1,15 @@
 #!/usr/bin/python
+"""
+TODO::
+1. Read configuraion for tool
+2. Initiaize Git, RBT
+3. review_id = Poll on Review Request()
+a. rbt patch -c <review_id>
+4. get changed files.
+5. seperate files by extension
+6. check secuirty issues in each filesby extension
 
+"""
 from git import Repo
 from config import Configuration
 
