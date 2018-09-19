@@ -12,6 +12,7 @@ typedef struct Node{
 
 node* get_Newnode(int );
 node* get_EmptyNode();
+node* getParentfor(node*, int);
 void insertLeftChild(node* , int );
 void insertRightChild(node* , int );
 void deleteLeftChild(node*);

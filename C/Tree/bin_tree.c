@@ -1,11 +1,11 @@
-#include "binTree.h"
-/*
+#include "bin_tree.h"
+
 node* getParentfor(node* root, int data){
     node* tmp;
     if(root == NULL)
         return NULL;
     tmp = root;
-    if(tmp->lft->data == data | tmp->rgt->data == data)
+    if((tmp->lft->data == data) || (tmp->rgt->data == data))
         return tmp;
     else{
         if(tmp->data > data){
@@ -17,9 +17,9 @@ node* getParentfor(node* root, int data){
             tmp = getParentfor(tmp, data);
         }
     }
-    return root;
+	return NULL;
 }
-
+/*
 node* getSiblingfor()
 {
 

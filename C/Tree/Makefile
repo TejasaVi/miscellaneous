@@ -1,6 +1,6 @@
 CC= cc
-CFLAGS= -Wall -c
 DEBUG= -g
+CFLAGS= -Wall -c  -g
 
 BIN_OBJS= bst bin_tree
 BASE_OBJS= bin_tree.c  bin_tree.h

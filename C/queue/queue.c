@@ -26,9 +26,9 @@ int enqueue(Q *q, int input)
 			q->counter+=1;
 			return 0;
 		}
-		
+
 	}
-	
+
 	return -1;
 }
 
@@ -53,7 +53,7 @@ void print_queue(Q *q){
 	data *tmp= q->ptr_front;
 	for(int i=0; i< q->counter;i++){
 		printf("[%d] ", tmp->data );
-		tmp = tmp->nxt; 
+		tmp = tmp->nxt;
 	}
 	printf("\n");
 }
@@ -89,7 +89,7 @@ int intialize(Q *q, int size)
 	if (size < 1){
 		printf("Initialization failed least size of Queue should be 1\n");
 		return -1;
-	}	
+	}
 	q->max_size = size;
 	q->counter =0;
 	printf("Initialized New Queue\n");

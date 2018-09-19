@@ -8,7 +8,6 @@ int main(int argc, char *argv[])
 		if (intialize(&q, atoi(argv[1]))< 0) {
 			printf("Intialization of Queue Failed\n");
 			return -1;
-		
 		}
 	}
 	else{
@@ -21,13 +20,13 @@ int main(int argc, char *argv[])
 	enqueue(&q, 40);
 	printf("Element at the front = [%d]\n",peek(&q));
 	print_queue(&q);
-	printf("Removed element : [%d]\n",dequeue(&q)); 	
+	printf("Removed element : [%d]\n",dequeue(&q));
 	print_queue(&q);
-	printf("Removed element : [%d]\n",dequeue(&q)); 	
+	printf("Removed element : [%d]\n",dequeue(&q));
 	print_queue(&q);
-	printf("Removed element : [%d]\n",dequeue(&q)); 	
+	printf("Removed element : [%d]\n",dequeue(&q));
 	print_queue(&q);
-	printf("Removed element : [%d]\n",dequeue(&q)); 	
+	printf("Removed element : [%d]\n",dequeue(&q));
 	print_queue(&q);
 	return 0;
 }
