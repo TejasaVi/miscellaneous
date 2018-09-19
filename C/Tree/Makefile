@@ -17,4 +17,4 @@ bin_tree.o: bin_tree.c  bin_tree.h
 	$(CC) $(BASE_OBJS) $(CFLAGS)
 
 clean:
-	rm -rf $(BIN_OBJS) $(LIB_OBJ)
+	rm -rf $(BIN_OBJS) $(LIB_OBJ) bin_tree.h.gch
