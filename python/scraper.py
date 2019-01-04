@@ -33,15 +33,15 @@ def scrape_page(url_link):
   return listings
 
 def clone_git_repo():
-	repo_clone_url = "https://bitbucket.org/zeeshan_07/cs2/src/master/"
+	repo_clone_url = "https://bitbucket.org/zeeshan_07/cs1/src/master/"
 	local_repo = "my_dir"
-	test_branch = "crowdstrike2"
+	test_branch = "crowdstrike1"
 	repo = git.Repo.clone_from(repo_clone_url, local_repo)
-	print("Done")
-	os.system("ls ./my_dir")
+	repo.git.checkout("-b", test_branch)
+        os.system("ls ./my_dir")
 	#shutil.rmtree("my_dir")
 
-	
+
 if __name__ == "__main__":
 	# Scrape page
 	print("Starting Webpage scraping....")
@@ -56,22 +56,22 @@ if __name__ == "__main__":
 	print("Cloning Remote Repository....")
 	clone_git_repo()
 	print("Remote Repository: Complete!!")
-  
+
 	# Move file to local Repo
 	print("Copying changes to the local Repository....")
-	shutil.copyfile(file_to_copy, "my_dir/src/".join("index.js"))
+	shutil.copyfile(file_to_copy, os.path.join("my_dir/src/", "index.js"))
 	print("Copying changes to the local Repository: Complete !!")
-	
 	# Add file to local_repo
 	repo_dir = "my_dir"
-	repo = Repo(repo_dir)
-	repo.index.add(file_to_copy)
+	repo = git.Repo(repo_dir)
+        file_to_copy = [item.a_path for item in repo.index.diff(None)]
+        repo.index.add(file_to_copy)
 	print("Adding changed files to local Repository: Complete !!")
 	# commit files to local_repo
 	commit_message = "Commit Message"
 	repo.index.commit(commit_message)
-	origin = repo.remote("crowdstrike1")
 	print("Commit changes to local Repository: Complete !!")
-	# push changes to remote repo
-	origin.push()
+        # push changes to remote repo
+        origin = repo.remote("origin")
+	origin.push("origin","crowdstrike1" )
 	print("Pushing changed files to Remote Repository: Complete !!")
