@@ -22,7 +22,10 @@ def insert():
     dt["time"] = datetime.datetime.now()
     db.db_insert_table("TIMEPASS", dt)
     db.con.commit()
+    res = db.db_get_data("TIMEPASS")
     db.db_connection_close()
+    return jsonify({'tasks': res}), 200
+
 @app.route('/list')
 def list():
     db = DataBaseManager(path=PATH)
