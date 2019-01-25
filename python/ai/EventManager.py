@@ -12,6 +12,19 @@ PATH = "./test.db"
 app = Flask(__name__)
 
 
+@app.route('/update/<int:task_id>', methods = ['PUT'])
+def update(task_id):
+    db = DataBaseManager(path=PATH)
+    db.get_db_connection()
+    dt = OrderedDict()
+    dt["name"]= request.json['name']
+    dt["activity"] = request.json['activity']
+    dt["time"] = datetime.datetime.now()
+    db.db_update_table("TIMEPASS", dt, task_id)
+    res = db.db_get_data("TIMEPASS")
+    db.db_connection_close()
+    return jsonify({'tasks': res}), 200
+
 @app.route('/insert', methods = ['POST'])
 def insert():
     db = DataBaseManager(path=PATH)
@@ -21,7 +34,6 @@ def insert():
     dt["activity"] = request.json['activity']
     dt["time"] = datetime.datetime.now()
     db.db_insert_table("TIMEPASS", dt)
-    db.con.commit()
     res = db.db_get_data("TIMEPASS")
     db.db_connection_close()
     return jsonify({'tasks': res}), 200

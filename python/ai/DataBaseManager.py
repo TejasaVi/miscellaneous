@@ -36,10 +36,27 @@ class DataBaseManager(object):
             print ("table not created")
             print(e)
 
+    def db_update_table(self, tables_name, column_values, task_id):
+        try:
+            res = []
+            values = []
+            for key, val in column_values.items():
+                res.append("%s=?" %(str(key)))
+                values.append(val)
+            res = ', '.join(res)
+            query = "UPDATE {0} SET {1} WHERE id=?".format(tables_name, res)
+            values.append(task_id)
+            self.con.execute(query,(values))
+            self.con.commit()
+        except Exception as e:
+            print("Values not inserted into the tables")
+            print (e)
+
     def db_insert_table(self, table_name, key_values):
         try:
             query = "INSERT INTO {0} {1} VALUES ({2}?)".format(table_name, tuple(key_values.keys()),"?, "*(len(key_values)-1))
             self.con.execute(query, tuple(key_values.values()))
+            self.con.commit()
         except Exception as e:
             print("Values not inserted into the tables")
             print (e)
