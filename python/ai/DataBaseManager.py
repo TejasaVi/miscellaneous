@@ -61,14 +61,24 @@ class DataBaseManager(object):
             print("Values not inserted into the tables")
             print (e)
 
-    def db_get_data(self, table_name, all_values=True, column_list=None,  where=None):
+    def db_delete_from_table(self, table_name, task_id):
+        try:
+            query = "DELETE FROM {0} WHERE id={1}".format(table_name, task_id)
+            self.con.execute(query)
+            self.con.commit()
+        except Exception as e:
+            print("Value not deleted")
+            print (e)
+
+    def db_get_data(self, table_name, all_values=True, column_list=None,  condition=None):
         try:
             if not all_values and column_list is None:
                 raise("coloumn values not specified")
             column_list = "*" if all_values else column_list
             query = '''SELECT {0} FROM {1} '''.format( column_list, table_name )
-            if where is not None:
-                query = query + where
+            if condition is not None:
+                query = query + "WHERE " + condition
+            print query
             cursor = self.con.execute(query)
             results = [row for row in cursor]
             return results

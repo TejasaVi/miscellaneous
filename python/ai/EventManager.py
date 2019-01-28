@@ -12,6 +12,15 @@ PATH = "./test.db"
 app = Flask(__name__)
 
 
+@app.route('/delete/<int:task_id>', methods = ['DELETE'])
+def delete_task(task_id):
+    db = DataBaseManager(path=PATH)
+    db.get_db_connection()
+    db.db_delete_from_table("TIMEPASS", task_id)
+    res = db.db_get_data("TIMEPASS")
+    db.db_connection_close()
+    return jsonify({'tasks': res}), 200
+
 @app.route('/update/<int:task_id>', methods = ['PUT'])
 def update(task_id):
     db = DataBaseManager(path=PATH)

@@ -18,7 +18,6 @@ dt["time"] = datetime.datetime.now()
 db.db_insert_table("TIMEPASS", dt)
 db.con.commit()
 res = db.db_get_data("TIMEPASS")
-"""
 dt = OrderedDict()
 dt["name"]="tejas"
 dt["activity"] = "sleeping"
@@ -26,6 +25,8 @@ dt["time"] = datetime.datetime.now()
 task_id = 12
 db.db_update_table("TIMEPASS", dt ,task_id)
 db.con.commit()
-res = db.db_get_data("TIMEPASS")
+"""
+column_list= "activity, time"
+res = db.db_get_data("TIMEPASS", all_values=False, column_list=column_list, condition="name=='tejas'")
 pprint.pprint(res)
 db.db_connection_close()
