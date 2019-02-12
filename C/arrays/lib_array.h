@@ -15,4 +15,8 @@ void RightShiftByOne(int array[], int len);
 
 void rotate_array(int array[], int len, int RotateBy, int right_shift);
 
+void bubble_sort(int array[], int len);
+
+void selection_sort(int array[], int len);
+
 #endif

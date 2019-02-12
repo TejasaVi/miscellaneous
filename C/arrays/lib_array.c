@@ -39,6 +39,7 @@ void print_alternate_element(int *param, int size) {
     }
     printf("\n");
 }
+
 void LeftShiftByOne(int array[], int len) {
 	int temp, i;
 	temp = array[0];
@@ -85,4 +86,35 @@ void rotate_array(int array[], int len, int RotateBy, int right_shift) {
 	}
 }
 
+void bubble_sort(int array[], int len) {
+	int i,j;
+	int tmp;
+	for(i=0; i<len-1; i++) {
+		for(j=0;j<len-i-1; j++) {
+			if(array[j] > array[j+1]) {
+				tmp = array[j];
+				array[j] = array[j+1];
+				array[j+1] = tmp;
+			}
+		}
+
+	}
+	return;
+}
+
+void selection_sort(int array[], int len){
+	int i,j,min, tmp;
+	for(i=0; i<len-1;i++) {
+		min =i;
+		for(j=i+1;j<len;j++) {
+			if(array[j] < array[min]) {
+				min = j;
+			}
+		tmp = array[i];
+		array[i] = array[min];
+		array[min] = tmp;
+		}
+	}
+	return;
+}
 
