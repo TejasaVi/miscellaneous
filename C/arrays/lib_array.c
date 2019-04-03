@@ -1,5 +1,25 @@
 #include<stdio.h>
 
+int binary_search(int array[], int len, int key){
+	int left = 0;
+	int right = len -1;
+	int mid;
+	print_array(array,len);
+	while(left < right) {
+		mid = left+right/2;
+		printf("Left = [%d],Mid = [%d],Right = [%d]\n");
+		if(array[mid] == key){
+			return mid;
+		}
+		else if(array[mid] < key){
+			left = left+1;
+		}
+		else{
+			right = right-1;
+		}
+	}
+}
+
 int sum_of_all_elements(int array[], int len) {
 	int i = 0;
 	int sum=0;

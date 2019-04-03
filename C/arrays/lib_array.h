@@ -1,6 +1,8 @@
 #ifndef __LIB_ARRAY_H
 # define __LIB_ARRAY_H
 
+int binary_search(int array[], int len, int key);
+
 int sum_of_all_elements(int array[], int len);
 
 void print_array(int arr[], int len);

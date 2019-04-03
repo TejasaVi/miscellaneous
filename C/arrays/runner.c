@@ -4,6 +4,8 @@
 
 int main(int argc, char *argv[]) {
 	int i;
+	int key;
+	int indx;
 	int num_of_elements = 0;
 	printf("Enter number of elements in array:");
 	scanf("%d",&num_of_elements);
@@ -13,10 +15,15 @@ int main(int argc, char *argv[]) {
 		scanf("%d",&array[i]);
 	}
 	int op;
-	printf("Choose Array Operation:\n1)Sum of all items\n2)Move zeros at end\n3)Print Alternate items\n4)Rotate Right\n5)Rotate Left\n6)Bubble Sort\n7)Selection Sort \n8)\n9) \n10)\n");
+	printf("Choose Array Operation:\n1)Sum of all items\n2)Move zeros at end\n3)Print Alternate items\n4)Rotate Right\n5)Rotate Left\n6)Bubble Sort\n7)Selection Sort \n8)Binary Search key\n9) \n10)\n");
 	scanf("%d",&op);
 	/* switch to functions */
 	switch(op) {
+	case 8:
+			printf("Enter key to search:\n");
+			scanf("%d",&key);
+			indx = binary_search(array,num_of_elements, key);
+			printf("Key found at index [%d]\n", indx);
 	case 7:
 			selection_sort(array, num_of_elements);
 			printf("Array after Selection Sorting:");
