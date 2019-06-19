@@ -16,9 +16,10 @@ func main() {
 	args := []string{"ls", "-a", "-l", "-h"}
 	fmt.Println(args)
 	env:= os.Environ()
-	fmt.Println(env)
+	//fmt.Println(env)
 	execErr := syscall.Exec(bniary, args, env)
 	if execErr != nil {
 		 panic(execErr)
 	}
+	fmt.Println("This will not be executed..")
 }
