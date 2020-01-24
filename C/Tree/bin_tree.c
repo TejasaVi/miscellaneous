@@ -1,4 +1,20 @@
 #include "bin_tree.h"
+int getSumofTree(node*root)
+{
+	node* tmp=NULL;
+	int sum = 0;
+	if(root == NULL)
+		goto end;
+	tmp = root;
+	sum = tmp->data;
+	printf("[%d]->\n",tmp->data);
+	while(tmp !=NULL){
+		sum += getSumofTree(tmp->lft);
+		sum += getSumofTree(tmp->rgt);
+	}
+end:
+	return sum;
+}
 
 node* getParentfor(node* root, int data){
     node* tmp;
@@ -19,16 +35,27 @@ node* getParentfor(node* root, int data){
     }
 	return NULL;
 }
-/*
-node* getSiblingfor()
-{
 
+
+node* getSiblingfor(node*root,int data)
+{
+	node *tmp, *parent;
+	if(root ==NULL)
+		return NULL;
+	tmp = root;
+	parent = getParentfor(tmp,data);
+	if(parent->lft->data ==data)
+		return parent->rgt;
+	return parent->lft;
 }
 
 int getNodeData(node* current)
 {
+	if(!current){
+		return current->data;
+	}
+	return -1;
 }
-*/
 
 void insertLeftChild(node* parent, int data)
 {

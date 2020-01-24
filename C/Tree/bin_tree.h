@@ -13,6 +13,7 @@ typedef struct Node{
 node* get_Newnode(int );
 node* get_EmptyNode();
 node* getParentfor(node*, int);
+node* getSiblingfor(node*, int);
 void insertLeftChild(node* , int );
 void insertRightChild(node* , int );
 void deleteLeftChild(node*);
@@ -22,3 +23,5 @@ void printTreePreorder(node* );
 void printTreePostorder(node* );
 void printTreeInorder(node* );
 void initBinaryTree(node*);
+int getSumofTree(node*);
+int getNodeData(node*);
