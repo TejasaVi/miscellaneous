@@ -68,7 +68,7 @@ node* insertafterNth(node* head, int n, int data){
     new->nxt = NULL;
     tmp = head;
     printf("\n%d %d \n", data, n);
-    for(i=0; i<n; i++){
+    for(i=0; i<n-1; i++){
         tmp = tmp->nxt;
     }
     new->nxt = tmp->nxt;
