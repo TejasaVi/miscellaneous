@@ -1,0 +1,55 @@
+Untrusted producer consumer task v4
+Implement system that consists of two applications: producer.exe and consumer.exe. Producer and
+consumer should communicate using N (where N is configurable) mapped view objects (we use term
+shared buffers in the following text) of fixed length 1024 bytes. Your task is to design and implement
+control/synchronization communication (details provided shortly).
+Producer:
+===========
+The producer reads an input text file and populates the shared buffers with sentences into the following
+form:
+length of sentence#1
+char sentence#1[]
+length of sentence#2
+char sentence#2[]
+...
+length of sentence#K
+char sentence#K[]
+A sentence corresponds to a line read from the text file. In addition to populating the shared buffers
+with the sentences the producer should also print each sentence to the console followed by a newline.
+Producer command line inputs:
+==========================
+N - defines the number of shared buffers used for the communication between producer and consumer.
+File - Provides the text file path.
+Consumer:
+============
+Consumer is responsible for reading the sentences from the shared buffers. It should print all sentences
+that contain an input substring – this substring may contain spaces. The shared buffer state should not
+be blindly trusted, assume that an attacker may be attempting to mess with the data in the shared
+buffers. The consumer must take all precautions necessary to safely process the input data. Should
+invalid data be found at some point, the consumer doesn't have to finish the processing of the given
+shared buffer but the consumer must make the shared buffer available for potential next iteration. In
+other words, invalid data found in a shared buffer must not prevent this buffer’s re-use.
+Consumer command line inputs:
+===========================
+N - defines the number of shared buffers.
+Substring - Provides the substring to search for.
+Control communication (synchronization)
+==================================
+You have to design and implement control communication that will provide:
+1. safe data processing (i.e.; no valid written sentence is lost, eventually all shared buffer
+populated with valid sentences are processed)
+2. possible re-use of shared buffers (if needed)
+3. using OS level constructs/primitives is allowed
+Additional requirements/comments:
+==============================
+1. Design choices should favor throughput.
+2. Consumer must not crash after its initialization.
+3. Producer will be started first and will exit once all sentences are processed by the consumer.
+4. Consumer will be started second and won’t terminate.
+5. Implementation must be done in C/C++ using standard libraries and platform specific core
+headers (i.e.; no existing specialized libraries).
+Important:
+============
+You can introduce new constructs/objects (for example for the required synchronization) and define
+version dependent header used in shared buffers. The header might contain any information you may
+need. But the header must be followed by the sequence (unsigned long, char array) defined above.
