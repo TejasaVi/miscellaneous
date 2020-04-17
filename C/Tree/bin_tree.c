@@ -1,4 +1,15 @@
 #include "bin_tree.h"
+
+
+void DeleteTree(node*root){
+	if(root == NULL)
+		return;
+	DeleteTree(root->lft);
+	DeleteTree(root->rgt);
+	free(root);
+}
+
+
 int getSumofTree(node*root)
 {
 	node* tmp=NULL;
