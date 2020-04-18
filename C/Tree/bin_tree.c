@@ -3,28 +3,30 @@
 
 int GetSumForPath(node *root,int node_data){
 	int sum = 0,subsum = 0;
-	
+
 	if(root->data == node_data){
 		return node_data;
 	}
-	else if (node_data < root->data && root->lft !=NULL){
-		subsum = GetSumForPath(root->lft);
+	else if ((node_data < root->data )&& (root->lft != NULL)){
+		subsum = GetSumForPath(root->lft, node_data);
 		if( subsum != 0)
 			sum = root->data + subsum;
 		else
 			sum = 0;
 		return sum;
 	}
-	else if (node_data > root->data && root->rgt != NULL){
-		subsum = GetSumForPath(root->rgt);
+	else if((node_data > root->data) && (root->rgt != NULL)){
+		subsum = GetSumForPath(root->rgt, node_data);
 		if( subsum != 0)
 			sum = root->data + subsum;
 		else
 			sum = 0;
 		return sum;
 	}
-	else if(root->data != node_data && root->lft == NULL && root->rgt == NULL)
+	else if((root->data != node_data )&& (root->lft == NULL) && (root->rgt == NULL)){
 		return 0;
+	}
+return 0;
 }
 
 
@@ -32,7 +34,7 @@ int GetNumNodes(node* root){
 	if(root ==NULL){
 		return 0;
 	}
-	return (1+ GetNumNodes(root->lft) + GetNumNodes(root->rgt);
+	return (1+ GetNumNodes(root->lft) + GetNumNodes(root->rgt));
 }
 
 
