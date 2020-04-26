@@ -1,9 +1,12 @@
 GCC = gcc
 
-all: fifo
+all: fifo lru
 
 fifo: fifo.c
-	$(GCC) fifo.c -o $@
+	$(GCC) $@.c -o $@
+
+lru: lru.c
+	$(GCC) $@.c -o $@
 
 clean:
-	rm -rf fifo
+	rm -rf fifo lru
