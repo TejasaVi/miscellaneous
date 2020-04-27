@@ -1,5 +1,39 @@
 #include "bin_tree.h"
 
+int maxDepth(node* root)  //Also Height of Tree
+{ 
+   if (root==NULL)  
+       return 0; 
+   else 
+   { 
+       /* compute the depth of each subtree */
+       int lDepth = maxDepth(root->left); 
+       int rDepth = maxDepth(root->right); 
+  
+       /* use the larger one */
+       if (lDepth > rDepth)  
+           return(lDepth+1); 
+       return(rDepth+1); 
+   } 
+}
+
+
+void mirror(node* root)  
+{ 
+  if (root==NULL)  
+    return;   
+  else 
+  { 
+	/* do the subtrees */
+	mirror(root->left); 
+	mirror(root->right); 
+	/* swap the pointers in this node */
+	node* temp;
+	temp = root->left; 
+	node->left  = root->right; 
+	node->right = temp; 
+  } 
+}  
 
 int GetSumForPath(node *root,int node_data){
 	int sum = 0,subsum = 0;
