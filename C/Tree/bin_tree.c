@@ -1,5 +1,46 @@
 #include "bin_tree.h"
 
+// Maximum Sum at a level in a tree
+
+node* queue[100];
+int rear = -1;
+
+int MaxSumLevel(node* root){ //return max_level if level with maximum sum is needed.
+	node* tmp;
+	int max_sum = 0;
+	int level =0;
+	int level_sum = 0;
+	int max_level = -1;
+	
+	if (root == NULL)
+		return 0;
+	
+	queue[++rear] = root;
+
+	while(1){
+		level_sum = 0;
+		if(rear == -1)
+			break;
+		
+		while(rear>= 0){
+			tmp = queue[rear--];
+			if(tmp->lft != NULL)
+				queue[++rear] = tmp->lft;
+			if(tmp->rgt != NULL)
+				queue[++rear] = tmp->rgt;
+			level_sum = level_sum + tmp->data;
+		}
+		
+		//update required values
+		if(level_sum  > max_sum){
+			max_sum = level_sum;
+			max_level = level++;
+		}
+	}
+	return max_sum;
+} 
+
+
 int maxDepth(node* root)  //Also Height of Tree
 { 
    if (root==NULL)  
