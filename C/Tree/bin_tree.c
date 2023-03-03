@@ -48,8 +48,8 @@ int maxDepth(node* root)  //Also Height of Tree
    else 
    { 
        /* compute the depth of each subtree */
-       int lDepth = maxDepth(root->left); 
-       int rDepth = maxDepth(root->right); 
+       int lDepth = maxDepth(root->lft); 
+       int rDepth = maxDepth(root->rgt); 
   
        /* use the larger one */
        if (lDepth > rDepth)  
@@ -58,24 +58,24 @@ int maxDepth(node* root)  //Also Height of Tree
    } 
 }
 
-
+/*
 void mirror(node* root)  
 { 
   if (root==NULL)  
     return;   
   else 
   { 
-	/* do the subtrees */
-	mirror(root->left); 
-	mirror(root->right); 
-	/* swap the pointers in this node */
+	// do the subtrees 
+	mirror(root->lft); 
+	mirror(root->rgt); 
+	// swap the pointers in this node
 	node* temp;
-	temp = root->left; 
-	node->left  = root->right; 
-	node->right = temp; 
+	temp = root->lft; 
+	node->lft  = root->rgt; 
+	node->rgt = temp; 
   } 
 }  
-
+*/
 int GetSumForPath(node *root,int node_data){
 	int sum = 0,subsum = 0;
 
