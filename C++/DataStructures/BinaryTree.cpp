@@ -22,8 +22,8 @@ public:
 	void preorder_print();
 
 private:
-	void destroy_tree(node *leaf);
-	void insert(int key, node *leaf);
+	void _destroy_tree(node *leaf);
+	void _insert(int key, node *leaf);
 	node *search(int key, node *leaf);
 	void inorder_print(node *leaf);
 	void postorder_print(node *leaf);
@@ -41,19 +41,19 @@ btree::~btree(){
 	destroy_tree();
 }
 
-void btree::destroy_tree(node *leaf){
+void btree::_destroy_tree(node *leaf){
 	if(leaf != NULL){
-		destroy_tree(leaf->left);
-		destroy_tree(leaf->right);
+		_destroy_tree(leaf->left);
+		_destroy_tree(leaf->right);
 		delete leaf;
 	}
 }
 
-void btree::insert(int key, node *leaf){
+void btree::_insert(int key, node *leaf){
 
 	if(key < leaf->value){
 		if(leaf->left != NULL){
-			insert(key, leaf->left);
+			_insert(key, leaf->left);
 		}else{
 			leaf->left = new node;
 			leaf->left->value = key;
@@ -62,7 +62,7 @@ void btree::insert(int key, node *leaf){
 		}
 	}else if(key >= leaf->value){
 		if(leaf->right != NULL){
-			insert(key, leaf->right);
+			_insert(key, leaf->right);
 		}else{
 			leaf->right = new node;
 			leaf->right->value = key;
@@ -75,7 +75,7 @@ void btree::insert(int key, node *leaf){
 
 void btree::insert(int key){
 	if(root != NULL){
-		insert(key, root);
+		_insert(key, root);
 	}else{
 		root = new node;
 		root->value = key;
@@ -104,7 +104,7 @@ node *btree::search(int key){
 }
 
 void btree::destroy_tree(){
-	destroy_tree(root);
+	_destroy_tree(root);
 }
 
 void btree::inorder_print(){

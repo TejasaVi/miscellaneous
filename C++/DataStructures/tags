@@ -1,43 +1,69 @@
 !_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
 !_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
-!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
-!_TAG_PROGRAM_NAME	Exuberant Ctags	//
-!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
-!_TAG_PROGRAM_VERSION	5.8	//
-LinkedList	LinkedList.cpp	/^		LinkedList() {$/;"	f	class:LinkedList
+!_TAG_OUTPUT_EXCMD	mixed	/number, pattern, mixed, or combineV2/
+!_TAG_OUTPUT_FILESEP	slash	/slash or backslash/
+!_TAG_OUTPUT_MODE	u-ctags	/u-ctags or e-ctags/
+!_TAG_PATTERN_LENGTH_LIMIT	96	/0 for no limit/
+!_TAG_PROC_CWD	/home/terminator/miscellaneous/C++/DataStructures/	//
+!_TAG_PROGRAM_AUTHOR	Universal Ctags Team	//
+!_TAG_PROGRAM_NAME	Universal Ctags	/Derived from Exuberant Ctags/
+!_TAG_PROGRAM_URL	https://ctags.io/	/official site/
+!_TAG_PROGRAM_VERSION	5.9.0	//
+KthElementFromArray	Kthelement.cc	/^		KthElementFromArray() {$/;"	f	class:KthElementFromArray	file:
+KthElementFromArray	Kthelement.cc	/^class KthElementFromArray {$/;"	c	file:
+Kthlargest	Kthelement.cc	/^int KthElementFromArray::Kthlargest(int k) {$/;"	f	class:KthElementFromArray	typeref:typename:int
+Kthsmallest	Kthelement.cc	/^int KthElementFromArray::Kthsmallest(int k) {$/;"	f	class:KthElementFromArray	typeref:typename:int
+LinkedList	LinkedList.cpp	/^		LinkedList() {$/;"	f	class:LinkedList	file:
 LinkedList	LinkedList.cpp	/^class LinkedList {$/;"	c	file:
 Node	LinkedList.cpp	/^typedef struct Node {$/;"	s	file:
 Node	LinkedList.cpp	/^}Node;$/;"	t	typeref:struct:Node	file:
-add_node	LinkedList.cpp	/^void LinkedList::add_node(int item){$/;"	f	class:LinkedList
+_destroy_tree	BinaryTree.cpp	/^void btree::_destroy_tree(node *leaf){$/;"	f	class:btree	typeref:typename:void
+_insert	BinaryTree.cpp	/^void btree::_insert(int key, node *leaf){$/;"	f	class:btree	typeref:typename:void
+add	Kthelement.cc	/^		void add(int item){$/;"	f	class:KthElementFromArray	typeref:typename:void	file:
+add_node	LinkedList.cpp	/^void LinkedList::add_node(int item){$/;"	f	class:LinkedList	typeref:typename:void
+all	Makefile	/^all:	BinarySearchTree.cc$/;"	t
+array	Kthelement.cc	/^		int *array;$/;"	m	class:KthElementFromArray	typeref:typename:int *	file:
+bsttree	BinarySearchTree.cc	/^bsttree::bsttree(){$/;"	f	class:bsttree
+bsttree	BinarySearchTree.cc	/^class bsttree{$/;"	c	file:
 btree	BinaryTree.cpp	/^btree::btree(){$/;"	f	class:btree
 btree	BinaryTree.cpp	/^class btree{$/;"	c	file:
-cntr	LinkedList.cpp	/^	int cntr;$/;"	m	class:LinkedList	file:
-data	LinkedList.cpp	/^	int data;$/;"	m	struct:Node	file:
-decCntr	LinkedList.cpp	/^		void decCntr(){this->cntr = this->cntr-1;};$/;"	f	class:LinkedList
-delete_node	LinkedList.cpp	/^void LinkedList::delete_node(int pos) {$/;"	f	class:LinkedList
-destroy_tree	BinaryTree.cpp	/^void btree::destroy_tree(){$/;"	f	class:btree
-destroy_tree	BinaryTree.cpp	/^void btree::destroy_tree(node *leaf){$/;"	f	class:btree
-getCntr	LinkedList.cpp	/^		int getCntr(){return this->cntr;};$/;"	f	class:LinkedList
-head	LinkedList.cpp	/^	Node *head, *tail;$/;"	m	class:LinkedList	file:
-incCntr	LinkedList.cpp	/^		void incCntr(){this->cntr = this->cntr+1;};$/;"	f	class:LinkedList
-inorder_print	BinaryTree.cpp	/^void btree::inorder_print(){$/;"	f	class:btree
-inorder_print	BinaryTree.cpp	/^void btree::inorder_print(node *leaf){$/;"	f	class:btree
-insert	BinaryTree.cpp	/^void btree::insert(int key){$/;"	f	class:btree
-insert	BinaryTree.cpp	/^void btree::insert(int key, node *leaf){$/;"	f	class:btree
-left	BinaryTree.cpp	/^	node *left;$/;"	m	struct:node	file:
-main	BinaryTree.cpp	/^int main(){$/;"	f
-main	LinkedList.cpp	/^int main(void) {$/;"	f
-next	LinkedList.cpp	/^	struct Node *next;$/;"	m	struct:Node	typeref:struct:Node::Node	file:
+clean	Makefile	/^clean:$/;"	t
+cntr	LinkedList.cpp	/^	int cntr;$/;"	m	class:LinkedList	typeref:typename:int	file:
+data	LinkedList.cpp	/^	int data;$/;"	m	struct:Node	typeref:typename:int	file:
+decCntr	LinkedList.cpp	/^		void decCntr(){this->cntr = this->cntr-1;};$/;"	f	class:LinkedList	typeref:typename:void	file:
+delete_node	LinkedList.cpp	/^void LinkedList::delete_node(int pos) {$/;"	f	class:LinkedList	typeref:typename:void
+destroy_tree	BinaryTree.cpp	/^void btree::destroy_tree(){$/;"	f	class:btree	typeref:typename:void
+filled	Kthelement.cc	/^		int filled;$/;"	m	class:KthElementFromArray	typeref:typename:int	file:
+getCntr	LinkedList.cpp	/^		int getCntr(){return this->cntr;};$/;"	f	class:LinkedList	typeref:typename:int	file:
+head	LinkedList.cpp	/^	Node *head, *tail;$/;"	m	class:LinkedList	typeref:typename:Node *	file:
+incCntr	LinkedList.cpp	/^		void incCntr(){this->cntr = this->cntr+1;};$/;"	f	class:LinkedList	typeref:typename:void	file:
+inorder_print	BinaryTree.cpp	/^void btree::inorder_print(){$/;"	f	class:btree	typeref:typename:void
+inorder_print	BinaryTree.cpp	/^void btree::inorder_print(node *leaf){$/;"	f	class:btree	typeref:typename:void
+insert	BinaryTree.cpp	/^void btree::insert(int key){$/;"	f	class:btree	typeref:typename:void
+left	BinarySearchTree.cc	/^	node *left;$/;"	m	struct:node	typeref:typename:node *	file:
+left	BinaryTree.cpp	/^	node *left;$/;"	m	struct:node	typeref:typename:node *	file:
+main	BinarySearchTree.cc	/^int main() {$/;"	f	typeref:typename:int
+main	BinaryTree.cpp	/^int main(){$/;"	f	typeref:typename:int
+main	Kthelement.cc	/^int main() {$/;"	f	typeref:typename:int
+main	LinkedList.cpp	/^int main(void) {$/;"	f	typeref:typename:int
+next	LinkedList.cpp	/^	struct Node *next;$/;"	m	struct:Node	typeref:struct:Node *	file:
+node	BinarySearchTree.cc	/^struct node{$/;"	s	file:
 node	BinaryTree.cpp	/^struct node{$/;"	s	file:
-postorder_print	BinaryTree.cpp	/^void btree::postorder_print(){$/;"	f	class:btree
-postorder_print	BinaryTree.cpp	/^void btree::postorder_print(node *leaf){$/;"	f	class:btree
-preorder_print	BinaryTree.cpp	/^void btree::preorder_print(){$/;"	f	class:btree
-preorder_print	BinaryTree.cpp	/^void btree::preorder_print(node *leaf){$/;"	f	class:btree
-print_list	LinkedList.cpp	/^void LinkedList::print_list(){$/;"	f	class:LinkedList
-right	BinaryTree.cpp	/^	node *right;$/;"	m	struct:node	file:
-root	BinaryTree.cpp	/^	node *root;$/;"	m	class:btree	file:
-search	BinaryTree.cpp	/^node *btree::search(int key){$/;"	f	class:btree
-search	BinaryTree.cpp	/^node *btree::search(int key, node *leaf){$/;"	f	class:btree
-tail	LinkedList.cpp	/^	Node *head, *tail;$/;"	m	class:LinkedList	file:
-value	BinaryTree.cpp	/^	int value;$/;"	m	struct:node	file:
+postorder_print	BinaryTree.cpp	/^void btree::postorder_print(){$/;"	f	class:btree	typeref:typename:void
+postorder_print	BinaryTree.cpp	/^void btree::postorder_print(node *leaf){$/;"	f	class:btree	typeref:typename:void
+preorder_print	BinaryTree.cpp	/^void btree::preorder_print(){$/;"	f	class:btree	typeref:typename:void
+preorder_print	BinaryTree.cpp	/^void btree::preorder_print(node *leaf){$/;"	f	class:btree	typeref:typename:void
+print_list	LinkedList.cpp	/^void LinkedList::print_list(){$/;"	f	class:LinkedList	typeref:typename:void
+readArray	Kthelement.cc	/^		void readArray(){$/;"	f	class:KthElementFromArray	typeref:typename:void	file:
+resize	Kthelement.cc	/^void KthElementFromArray::resize() {$/;"	f	class:KthElementFromArray	typeref:typename:void
+right	BinarySearchTree.cc	/^	node *right;$/;"	m	struct:node	typeref:typename:node *	file:
+right	BinaryTree.cpp	/^	node *right;$/;"	m	struct:node	typeref:typename:node *	file:
+root	BinarySearchTree.cc	/^	node *root;$/;"	m	class:bsttree	typeref:typename:node *	file:
+root	BinaryTree.cpp	/^	node *root;$/;"	m	class:btree	typeref:typename:node *	file:
+search	BinaryTree.cpp	/^node *btree::search(int key){$/;"	f	class:btree	typeref:typename:node *
+search	BinaryTree.cpp	/^node *btree::search(int key, node *leaf){$/;"	f	class:btree	typeref:typename:node *
+size	Kthelement.cc	/^		int size;$/;"	m	class:KthElementFromArray	typeref:typename:int	file:
+tail	LinkedList.cpp	/^	Node *head, *tail;$/;"	m	class:LinkedList	typeref:typename:Node *	file:
+value	BinarySearchTree.cc	/^	int value;$/;"	m	struct:node	typeref:typename:int	file:
+value	BinaryTree.cpp	/^	int value;$/;"	m	struct:node	typeref:typename:int	file:
 ~btree	BinaryTree.cpp	/^btree::~btree(){$/;"	f	class:btree
