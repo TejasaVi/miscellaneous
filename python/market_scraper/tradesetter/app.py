@@ -10,7 +10,7 @@ cors = CORS(app)
 
 @app.route("/receiver", methods=["GET"])
 def get_eod_data():
-    today = fno(date="15122022")
+    today = fno(date="25082023")
     data = today.end_of_day_data()
     data = jsonify(data)
     return data

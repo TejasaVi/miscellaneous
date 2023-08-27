@@ -1,3 +1,4 @@
+#!/bin/python
 import pprint as pprint
 from deliveryData import StockDeliveryData as delivery
 from deliveryData import FNOData as fno
@@ -7,4 +8,4 @@ from deliveryData import FNOData as fno
 
 print("="*80)
 fno_data = fno()
-pprint.pprint(fno_data.get_fno_stocks_with_delivery_percentage(date="15122022", percentage=60))
+pprint.pprint(fno_data.get_fno_stocks_with_delivery_percentage(date="25082023", percentage=60))
