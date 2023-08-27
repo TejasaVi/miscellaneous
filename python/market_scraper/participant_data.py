@@ -127,7 +127,7 @@ def get_stk_pe_option_data(df):
     return pe_opt_stk_dicts
 
 def main():
-    url = "https://www1.nseindia.com/content/nsccl/fao_participant_oi_05042022.csv"
+    url = "https://archives.nseindia.com/content/nsccl/fao_participant_oi_25082023.csv"
     df = pd.read_csv(url)
     df = df.transpose()
     df = df.drop(df.index[-1])
@@ -136,7 +136,7 @@ def main():
     for index, row in df.iterrows():
         print(row[0],row[2],row[2],row[3],row[4],row[5],row[6],row[7],row[8],row[9],row[10],row[11],row[12],row[13],row[14])
     '''
-    #pprint.pprint(get_future_index_data(df))
+    pprint.pprint(get_future_index_data(df))
     #pprint.pprint(get_stock_future_data(df))
     #pprint.pprint(get_ce_option_index_data(df))
     #pprint.pprint(get_pe_option_index_data(df))
