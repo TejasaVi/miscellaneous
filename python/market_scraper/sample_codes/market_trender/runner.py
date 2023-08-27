@@ -1,16 +1,19 @@
 #!/usr/bin/python3
+"""Runner script for FNO data"""
+import argparse
+import json
+import pprint
+
+from flask import jsonify
 
 from dataWrapper import DatabaseRecorder as dr
 from fnoData import ParticipantData as fno
-import pprint
-import argparse
-from flask import jsonify
 
-dbName = "../dbs/futureIndex.db"
+DB_NAME = "../dbs/futureIndex.db"
 
 if __name__ == "__main__":
-    #db = dr(dbName)
-    #db.read_db()
+    # db = dr(DB_NAME)
+    # db.read_db()
     parser = argparse.ArgumentParser()
     parser.add_argument('-d', '--data_type', default=None,)
     args = parser.parse_args()
@@ -29,7 +32,7 @@ if __name__ == "__main__":
         print("=" * 80)
         exit(1)
 
-    today = fno(date="15122022")
+    today = fno(date="25082023")
     if data_type == "ALL":
         pprint.pprint(today.end_of_day_data())
     if data_type == "STK_FUT":
