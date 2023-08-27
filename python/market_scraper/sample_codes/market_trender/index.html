@@ -1,0 +1,47 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<script
+src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js">
+</script>
+</head>
+<body>
+<canvas id="myChart" style="width:40%;max-width:400px"></canvas>
+<script>
+const drawChart = async () => {
+		var xValues = ["FIIs", "DIIs", "Pros", "Retail"];
+		var yValues = [55, 49, 44, 24, 15];
+		var barColors = ["red", "green","blue","yellow"];
+
+		new Chart("myChart", {
+		  type: "bar",
+		  data: {
+			labels: xValues,
+			datasets: [{
+			  backgroundColor: barColors,
+			  data: yValues
+			}]
+		  },
+		  options: {
+			legend: {display: false},
+			title: {
+			  display: true,
+			  text: "Index Call Options Data"
+			}
+		  }
+		});
+	}
+
+const userAction = async () => {
+  const response = await fetch('http://localhost:5000/index_call_options');
+    const myJson = await response.json(); //extract JSON from the http response
+	  console.log(myJson);
+	  }
+
+</script>
+
+<button type="submit" onclick="drawChart()">Click Me</button>
+<button type="submit" onclick="UserAction()">Click Me</button>
+
+</body>
+</html>
