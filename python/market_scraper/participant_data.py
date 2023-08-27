@@ -6,6 +6,10 @@ import pprint
 #dnyformat = datetime.strftime(datetime.today(), "%d%m%Y")
 #url = "https://www1.nseindia.com/content/nsccl/fao_participant_oi_" + str(dnyformat) + ".csv"
 
+FII = "FII"
+DII = "DII"
+PRO = "Pro"
+RETAIL = "Client"
 
 def get_stock_future_data(df):
     stk_fut_dicts = {}
@@ -16,16 +20,16 @@ def get_stock_future_data(df):
         client_dict = {}
         client_type = row[0]
         stk_fut_dicts["stock_futures"][client_type] = {}
-        client_dict['stk_fut_long'] = row[3]
-        client_dict['stk_fut_short'] = row[4]
+        client_dict['long'] = row[3]
+        client_dict['short'] = row[4]
         difference = int(row[3]) - int(row[4])
-        client_dict['stk_fut_difference'] = difference
+        client_dict['difference'] = difference
         if difference < 0:
-            client_dict['stk_fut_signal'] = 'Negative'
+            client_dict['sentiment'] = 'Negative'
         elif difference >0:
-            client_dict['stk_fut_signal'] = 'Positive'
+            client_dict['sentiment'] = 'Positive'
         else:
-            client_dict['stk_fut_signal'] = 'Neutral'
+            client_dict['sentiment'] = 'Neutral'
         stk_fut_dicts["stock_futures"][client_type] =client_dict
     return stk_fut_dicts
 
@@ -38,16 +42,16 @@ def get_future_index_data(df):
         client_dict = {}
         client_type = row[0]
         fut_idx_dicts["index_futures"][client_type] = {}
-        client_dict['fut_idx_long'] = row[1]
-        client_dict['fut_idx_short'] = row[2]
+        client_dict['long'] = row[1]
+        client_dict['short'] = row[2]
         difference = int(row[1]) - int(row[2])
-        client_dict['fut_idx_difference'] = difference
+        client_dict['difference'] = difference
         if difference < 0:
-            client_dict['fut_idx_signal'] = 'Negative'
+            client_dict['sentiment'] = 'Negative'
         elif difference >0:
-            client_dict['fut_idx_signal'] = 'Positive'
+            client_dict['sentiment'] = 'Positive'
         else:
-            client_dict['fut_idx_signal'] = 'Neutral'
+            client_dict['sentiment'] = 'Neutral'
         fut_idx_dicts["index_futures"][client_type]=client_dict
     return fut_idx_dicts
 
@@ -60,16 +64,16 @@ def get_ce_option_index_data(df):
         client_dict = {}
         client_type = row[0]
         ce_opt_idx_dicts["index_option_ce"][client_type] = {}
-        client_dict['ce_opt_idx_long'] = row[5]
-        client_dict['ce_opt_idx_short'] = row[7]
+        client_dict['long'] = row[5]
+        client_dict['short'] = row[7]
         difference = int(row[5]) - int(row[7])
-        client_dict['ce_opt_idx_difference'] = difference
+        client_dict['difference'] = difference
         if difference < 0:
-            client_dict['ce_opt_idx_signal'] = 'Negative'
+            client_dict['sentiment'] = 'Negative'
         elif difference >0:
-            client_dict['ce_opt_idx_signal'] = 'Positive'
+            client_dict['sentiment'] = 'Positive'
         else:
-            client_dict['ce_opt_idx_signal'] = 'Neutral'
+            client_dict['sentiment'] = 'Neutral'
         ce_opt_idx_dicts["index_option_ce"][client_type] = client_dict
     return ce_opt_idx_dicts
 
@@ -83,16 +87,16 @@ def get_pe_option_index_data(df):
         client_dict = {}
         client_type = row[0]
         pe_opt_idx_dicts["index_option_pe"][client_type]={}
-        client_dict['pe_opt_idx_long'] = row[6]
-        client_dict['pe_opt_idx_short'] = row[8]
+        client_dict['long'] = row[6]
+        client_dict['short'] = row[8]
         difference = int(row[6]) - int(row[8])
-        client_dict['pe_opt_idx_difference'] = difference
+        client_dict['difference'] = difference
         if difference > 0:
-            client_dict['pe_opt_idx_signal'] = 'Negative'
+            client_dict['sentiment'] = 'Negative'
         elif difference < 0:
-            client_dict['pe_opt_idx_signal'] = 'Positive'
+            client_dict['sentiment'] = 'Positive'
         else:
-            client_dict['pe_opt_idx_signal'] = 'Neutral'
+            client_dict['sentiment'] = 'Neutral'
         pe_opt_idx_dicts["index_option_pe"][client_type] = client_dict
     return pe_opt_idx_dicts
 
@@ -105,16 +109,16 @@ def get_stk_ce_option_data(df):
         client_dict = {}
         client_type = row[0]
         ce_opt_stk_dicts["stock_option_ce"][client_type] = {}
-        client_dict['pe_opt_stk_long'] = row[6]
-        client_dict['pe_opt_stk_short'] = row[8]
+        client_dict['long'] = row[6]
+        client_dict['short'] = row[8]
         difference = int(row[6]) - int(row[8])
-        client_dict['pe_opt_stk_difference'] = difference
+        client_dict['difference'] = difference
         if difference < 0:
-            client_dict['pe_opt_stk_signal'] = 'Negative'
+            client_dict['sentiment'] = 'Negative'
         elif difference >0:
-            client_dict['pe_opt_stk_signal'] = 'Positive'
+            client_dict['sentiment'] = 'Positive'
         else:
-            client_dict['pe_opt_stk_signal'] = 'Neutral'
+            client_dict['sentiment'] = 'Neutral'
         ce_opt_stk_dicts["stock_option_ce"][client_type] = client_dict
     return ce_opt_stk_dicts
 
@@ -127,18 +131,55 @@ def get_stk_pe_option_data(df):
         client_dict = {}
         client_type = row[0]
         pe_opt_stk_dicts["stock_option_pe"][client_type] = {}
-        client_dict['pe_opt_stk_long'] = row[6]
-        client_dict['pe_opt_stk_short'] = row[8]
+        client_dict['long'] = row[6]
+        client_dict['short'] = row[8]
         difference = int(row[6]) - int(row[8])
-        client_dict['pe_opt_stk_difference'] = difference
+        client_dict['difference'] = difference
         if difference > 0:
-            client_dict['pe_opt_stk_signal'] = 'Negative'
+            client_dict['sentiment'] = 'Negative'
         elif difference < 0:
-            client_dict['pe_opt_stk_signal'] = 'Positive'
+            client_dict['sentiment'] = 'Positive'
         else:
-            client_dict['pe_opt_stk_signal'] = 'Neutral'
+            client_dict['sentiment'] = 'Neutral'
         pe_opt_stk_dicts["stock_option_pe"][client_type] = client_dict
     return pe_opt_stk_dicts
+
+#checks if the type of traders have positive outlook
+def postive_sentiment(data, ttype):
+    count = 0
+    for item in data:
+        if data[item][ttype]['sentiment'] == "Positive":
+            count = count + 1
+        elif data[item][ttype]['sentiment'] == "Neutral":
+            count = count + 1
+    if count == 6:
+        return True
+    return False
+
+#checks if the type of traders have positive outlook
+def negative_sentiment(data, ttype):
+    count = 0
+    for item in data:
+        if data[item][ttype]['sentiment'] == "Negative":
+            count = count + 1
+        elif data[item][ttype]['sentiment'] == "Neutral":
+            count = count + 1
+    if count == 6:
+        return True
+    return False
+
+def get_sentiment_segment_wise(data, ttype):
+    negative_list = []
+    positive_list = []
+    neutral_list = []
+    for item in data:
+        if data[item][ttype]['sentiment'] == "Negative":
+            negative_list.append(item)
+        elif data[item][ttype]['sentiment'] == "Positive":
+            positive_list.append(item)
+        elif data[item][ttype]['sentiment'] == "Neutral":
+            neutral_list.append(item)
+    return (negative_list,positive_list,neutral_list)
 
 def main():
     url = "https://archives.nseindia.com/content/nsccl/fao_participant_oi_25082023.csv"
@@ -157,7 +198,9 @@ def main():
     d5 = get_stk_ce_option_data(df)
     d6 = get_stk_pe_option_data(df)
     d7 = d1|d2|d3|d4|d5|d6
-    print(json.dumps(d7))
+    #print(json.dumps(d7))
+    print("Sentiment for FII:")
+    print(get_sentiment_segment_wise(d7,FII))
 
 if __name__ == '__main__':
     main()
