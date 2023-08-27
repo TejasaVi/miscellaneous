@@ -1,20 +1,19 @@
-import requests
-import pandas as pd
+"""Python script to get live loosers on NSE."""
 import json
 import pprint 
-expiry_date = '10-Feb-2022'
-symbol = 'NIFTY'
-url = 'https://www.nseindia.com/api/liveanalysis/gainers/allSec' 
-headers = {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.99 Safari/537.36',
+import requests
+
+URL = 'https://www.nseindia.com/api/liveanalysis/gainers/allSec' 
+HEADERS = {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.99 Safari/537.36',
            'accept-language': 'en-US,en;q=0.9',
            'accept-encoding': 'gzip, deflate, br',
            'referer':'https://www.nseindia.com/'}
 
 def _do_request():
     session = requests.Session()
-    request = session.get(url, headers=headers, timeout=5)
+    request = session.get(URL, headers=HEADERS, timeout=5)
     cookies = dict(request.cookies)
-    response = session.get(url, headers=headers, timeout=5, cookies=cookies).json()
+    response = session.get(URL, headers=HEADERS, timeout=5, cookies=cookies).json()
     rdata = json.dumps(response)
     json_data = json.loads(rdata)
     return json_data
