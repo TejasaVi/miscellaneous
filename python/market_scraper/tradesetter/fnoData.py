@@ -7,11 +7,32 @@ from datetime import datetime
 
 import pandas as pd
 
+FII = "FII"
+DII = "DII"
+PRO = "Pro"
+RETAIL = "Client"
 
 class ParticipantData(object):
     def __init__(self, date=None):
         self.url = self.__geturl(date=date)
         self.DF = self.__fetch_and_load()
+        self.processed_data = {}
+
+    def check_sentiment(self,ttype):
+        pos = []
+        neg = []
+        neutral = []
+        if self.processed_data  == {}:
+            self.end_of_day_data()
+        data = self.processed_data
+        for item in data:
+            if data[item][ttype]['sentiment'] == 'Positive':
+                pos.append(item)
+            elif data[item][ttype]['sentiment'] == 'Negative':
+                neg.append(item)
+            else:
+                neutral.append(item)
+        return (pos,neg,neutral)
 
     def end_of_day_data(self):
         eod_data = {
@@ -28,6 +49,7 @@ class ParticipantData(object):
         eod_data["index_put_options"] = self.get_index_option_pe_data()
         eod_data["stock_call_options"] = self.get_stk_option_ce_data()
         eod_data["stock_put_options"] = self.get_stk_option_pe_data()
+        self.processed_data = eod_data
         return eod_data
 
     def get_stock_futures_data(self):

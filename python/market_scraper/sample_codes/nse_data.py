@@ -8,11 +8,11 @@ import requests
 
 EXPIRY_DATE = '31-Aug-2023'
 SYMBOL = 'NIFTY'
-URL = 'https://www.nseindia.com/api/option-chain-indices?SYMBOL=' + SYMBOL
+URL = 'https://www.nseindia.com/api/option-chain-indices?symbol=' + SYMBOL
 HEADERS = {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.99 Safari/537.36',
            'accept-language': 'en,gu;q=0.9,hi;q=0.8',
            'accept-encoding': 'gzip, deflate, br',
-           'referer': 'https://www.nseindia.com/get-quotes/derivatives?SYMBOL=' + SYMBOL}
+           'referer': 'https://www.nseindia.com/get-quotes/derivatives?symbol=' + SYMBOL}
 
 
 def _do_request():

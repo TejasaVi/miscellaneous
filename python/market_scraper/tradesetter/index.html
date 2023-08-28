@@ -33,7 +33,7 @@ const drawChart = async () => {
 	}
 
 const userAction = async () => {
-  const response = await fetch('http://localhost:5000/index_call_options');
+  const response = await fetch('http://localhost:9000/receiver');
     const myJson = await response.json(); //extract JSON from the http response
 	  console.log(myJson);
 	  }
@@ -41,7 +41,7 @@ const userAction = async () => {
 </script>
 
 <button type="submit" onclick="drawChart()">Click Me</button>
-<button type="submit" onclick="UserAction()">Click Me</button>
+<button type="submit" onclick="UserAction()">Click for data</button>
 
 </body>
 </html>
