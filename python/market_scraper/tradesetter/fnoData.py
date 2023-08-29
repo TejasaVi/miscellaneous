@@ -2,7 +2,6 @@
 # pylint: disable=missing-class-docstring
 # pylint: disable=missing-function-docstring
 # pylint: disable=C0103
-
 from datetime import datetime
 
 import pandas as pd
@@ -12,27 +11,28 @@ DII = "DII"
 PRO = "Pro"
 RETAIL = "Client"
 
+
 class ParticipantData(object):
     def __init__(self, date=None):
         self.url = self.__geturl(date=date)
         self.DF = self.__fetch_and_load()
         self.processed_data = {}
 
-    def check_sentiment(self,ttype):
+    def check_sentiment(self, ttype):
         pos = []
         neg = []
         neutral = []
-        if self.processed_data  == {}:
+        if self.processed_data == {}:
             self.end_of_day_data()
         data = self.processed_data
         for item in data:
-            if data[item][ttype]['sentiment'] == 'Positive':
+            if data[item][ttype]["sentiment"] == "Positive":
                 pos.append(item)
-            elif data[item][ttype]['sentiment'] == 'Negative':
+            elif data[item][ttype]["sentiment"] == "Negative":
                 neg.append(item)
             else:
                 neutral.append(item)
-        return (pos,neg,neutral)
+        return (pos, neg, neutral)
 
     def end_of_day_data(self):
         eod_data = {
