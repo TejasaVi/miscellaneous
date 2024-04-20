@@ -92,6 +92,7 @@ class ParticipantData(object):
                 fut_idx_dicts[row[0]]["sentiment"] = "Positive"
             else:
                 fut_idx_dicts[row[0]]["sentiment"] = "Neutral"
+            fut_idx_dicts[row[0]]["ratio"] = float(row[1])/(float(row[1]) + float(row[2]))
         return fut_idx_dicts
 
     def get_index_option_ce_data(self):
