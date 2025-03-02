@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Asset</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f4f6f9;
+            font-family: 'Arial', sans-serif;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        .btn-custom {
+            background-color: #007bff;
+            color: #ffffff;
+        }
+        .btn-custom:hover {
+            background-color: #0056b3;
+        }
+        .btn-secondary-custom {
+            background-color: #6c757d;
+            color: #ffffff;
+        }
+        .btn-secondary-custom:hover {
+            background-color: #5a6268;
+        }
+        .top-left-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+        }
+        h2, h4 {
+            color: #333;
+        }
+        .form-control {
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Back to Home Button at the Top Left -->
+    <div class="top-left-btn">
+        <a href="/" class="btn btn-secondary-custom btn-sm">Back to Home</a>
+    </div>
+
+    <div class="container my-5">
+        <h2 class="text-center mb-4">Edit Asset</h2>
+        <form method="POST">
+            <div class="mb-3">
+                <label for="name" class="form-label">Asset Name</label>
+                <input type="text" class="form-control" id="name" name="name" value="{{ asset.name | capitalize }}" required>
+            </div>
+            <div class="mb-3">
+                <label for="valuation" class="form-label">Valuation (INR)</label>
+                <input type="number" class="form-control" id="valuation" name="valuation" value="{{ asset.valuation }}" step="0.01" required>
+            </div>
+            <div class="mb-3">
+                <label for="annual_return" class="form-label">Annual Return (%)</label>
+                <input type="number" class="form-control" id="annual_return" name="annual_return" value="{{ asset.annual_return }}" step="0.1" required>
+            </div>
+            <div class="d-flex justify-content-between">
+                <button type="submit" class="btn btn-custom">Update Asset</button>
+                <a href="/view_portfolio/{{ portfolio_id }}" class="btn btn-secondary-custom">Cancel</a>
+            </div>
+        </form>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
+

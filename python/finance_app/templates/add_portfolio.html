@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Portfolio</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script>
+        function toggleCustomAsset(assetDropdown) {
+            let customField = assetDropdown.parentElement.nextElementSibling;
+            customField.style.display = (assetDropdown.value === "Other") ? "block" : "none";
+        }
+
+        function addAssetRow() {
+            let assetContainer = document.getElementById("assets-container");
+            let assetRow = document.createElement("div");
+            assetRow.classList.add("row", "mb-3", "asset-row");
+            assetRow.innerHTML = `
+                <div class="col-md-3">
+                    <select class="form-select asset-type" onchange="toggleCustomAsset(this)" required>
+                        <option value="">--Select Asset--</option>
+                        <option value="Mutual Fund">Mutual Fund</option>
+                        <option value="EPF">EPF</option>
+                        <option value="PPF">PPF</option>
+                        <option value="VPF">VPF</option>
+                        <option value="Gold">Gold</option>
+                        <option value="Silver">Silver</option>
+                        <option value="ETFs">ETFs</option>
+                        <option value="FD">FD</option>
+                        <option value="NPS">NPS</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="col-md-3" style="display: none;">
+                    <input type="text" class="form-control custom-asset" placeholder="Custom Asset Name">
+                </div>
+                <div class="col-md-2">
+                    <input type="number" class="form-control valuation" placeholder="Valuation (INR)" required>
+                </div>
+                <div class="col-md-2">
+                    <input type="number" class="form-control annual-return" placeholder="Annual Return (%)" required>
+                </div>
+                <div class="col-md-2">
+                    <button type="button" class="btn btn-danger" onclick="removeAssetRow(this)">Remove</button>
+                </div>
+            `;
+            assetContainer.appendChild(assetRow);
+        }
+
+        function removeAssetRow(button) {
+            button.parentElement.parentElement.remove();
+        }
+
+        function validateAndSubmit() {
+            let assetRows = document.querySelectorAll(".asset-row");
+            let assetNames = new Set();
+            let assets = [];
+
+            for (let row of assetRows) {
+                let assetType = row.querySelector(".asset-type").value;
+                let customAsset = row.querySelector(".custom-asset").value.trim();
+                let valuation = row.querySelector(".valuation").value;
+                let annualReturn = row.querySelector(".annual-return").value;
+
+                let assetName = (assetType === "Other") ? customAsset : assetType;
+                if (!assetName) {
+                    alert("Asset name cannot be empty!");
+                    return;
+                }
+
+                if (assetNames.has(assetName.toLowerCase())) {
+                    alert(`Duplicate asset: ${assetName}`);
+                    return;
+                }
+
+                assetNames.add(assetName.toLowerCase());
+                assets.push({ name: assetName, valuation, annualReturn });
+            }
+
+            document.getElementById("assets-json").value = JSON.stringify(assets);
+            document.getElementById("portfolio-form").submit();
+        }
+    </script>
+</head>
+<body class="bg-light">
+
+    <!-- Navbar for Back to Home -->
+    <nav class="navbar navbar-light bg-white p-3">
+        <div class="container">
+            <a href="/" class="btn btn-outline-secondary">← Back to Home</a>
+            <h4 class="m-0">Add Portfolio</h4>
+            <div></div> <!-- Empty div to balance the layout -->
+        </div>
+    </nav>
+
+    <div class="container my-5">
+        <h2 class="text-center">Add New Portfolio</h2>
+        <form id="portfolio-form" action="/add_portfolio" method="post" class="bg-white p-4 rounded shadow-sm">
+            <div class="mb-3">
+                <label for="owner_name" class="form-label">Owner Name:</label>
+                <input type="text" id="owner_name" name="owner_name" class="form-control" required>
+            </div>
+
+            <h4>Add Assets</h4>
+            <div id="assets-container"></div>
+            <button type="button" class="btn btn-secondary mb-3" onclick="addAssetRow()">+ Add Asset</button>
+
+            <input type="hidden" id="assets-json" name="assets_json">
+
+            <button type="button" class="btn btn-primary" onclick="validateAndSubmit()">Create Portfolio</button>
+        </form>
+    </div>
+
+</body>
+</html>
+

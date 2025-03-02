@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ portfolio.owner_name }}'s Portfolio</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            background-color: #f4f6f9;
+            font-family: 'Arial', sans-serif;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+        .top-left-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+        }
+        .table th, .table td {
+            text-align: center;
+        }
+        .chart-container {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="top-left-btn">
+        <a href="/" class="btn btn-secondary">Back to Home</a>
+    </div>
+    <div class="container my-5">
+        <h2 class="text-center">{{ portfolio.owner_name }}'s Portfolio</h2>
+        <div class="row">
+            <div class="col-md-7">
+                <h3>Assets</h3>
+                <table class="table table-bordered">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Asset Name</th>
+                            <th>Valuation (INR)</th>
+                            <th>Annual Return (%)</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for asset in assets %}
+                        <tr>
+                            <td>{{ asset.name | capitalize }}</td>
+                            <td>₹{{ asset.valuation }}</td>
+                            <td>{{ asset.annual_return }}%</td>
+                            <td>
+                                <a href="/edit_asset/{{ asset.id }}/{{ portfolio.id }}" class="btn btn-warning btn-sm">Edit</a>
+                                <a href="/delete_asset/{{ asset.id }}/{{ portfolio.id }}" class="btn btn-danger btn-sm">Delete</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <a href="/add_asset/{{ portfolio.id }}" class="btn btn-primary">+ Add New Asset</a>
+            </div>
+            <div class="col-md-5">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h3>Net Worth</h3>
+                    </div>
+                    <div class="card-body">
+                        <h4>Total Net Worth: ₹{{ networth }}</h4>
+                        <hr>
+                        <h5>Breakdown:</h5>
+                        <canvas id="netWorthChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <h4 class="text-center">Future Projection (Next 5 Years)</h4>
+                    <canvas id="futureProjectionChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const distinctColors = [
+                '#FF5733', '#33FF57', '#3357FF', '#FF33A1', '#FF8C33', '#8D33FF', '#33FFF6', '#FFDB33', '#FF3333'
+            ];
+            
+            const labels = {{ projections.keys() | list | tojson }};
+            const dataValues = {{ projections.values() | list | tojson }};
+            
+            var ctx1 = document.getElementById('netWorthChart').getContext('2d');
+            new Chart(ctx1, {
+                type: 'pie',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: dataValues,
+                        backgroundColor: distinctColors.slice(0, labels.length),
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { position: 'top' },
+                        tooltip: {
+                            callbacks: {
+                                label: function(tooltipItem) {
+                                    return tooltipItem.label + ': ₹' + tooltipItem.raw.toLocaleString();
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            var ctx2 = document.getElementById('futureProjectionChart').getContext('2d');
+            var years = [new Date().getFullYear() + 1, new Date().getFullYear() + 2, new Date().getFullYear() + 3, new Date().getFullYear() + 4, new Date().getFullYear() + 5];
+            var assetProjections = {{ asset_projections | tojson }};
+            
+            var datasets = [];
+            Object.keys(assetProjections).forEach((asset, index) => {
+                datasets.push({
+                    label: asset,
+                    data: assetProjections[asset],
+                    borderColor: distinctColors[index % distinctColors.length],
+                    fill: false,
+                    tension: 0.2
+                });
+            });
+            
+            new Chart(ctx2, {
+                type: 'line',
+                data: {
+                    labels: years,
+                    datasets: datasets
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Projected Valuation (INR)'
+                            },
+                            beginAtZero: false
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Upcoming Years'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: { position: 'top' }
+                    }
+                }
+            });
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
