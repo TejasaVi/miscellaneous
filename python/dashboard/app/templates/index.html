@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Market Signals Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #0f172a;
+            color: #e5e7eb;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: #111827;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+        }
+
+        .card h2 {
+            margin-top: 0;
+            font-size: 18px;
+            border-bottom: 1px solid #374151;
+            padding-bottom: 8px;
+        }
+
+        .row {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+        }
+
+        .label {
+            color: #9ca3af;
+        }
+
+        .value {
+            font-weight: bold;
+        }
+
+        .bullish { color: #22c55e; }
+        .bearish { color: #ef4444; }
+        .neutral { color: #facc15; }
+
+        .footer {
+            text-align: center;
+            margin-top: 25px;
+            font-size: 13px;
+            color: #9ca3af;
+        }
+    </style>
+</head>
+<body>
+
+<h1>📊 Market Signals Dashboard</h1>
+
+<div class="dashboard">
+
+    <!-- API 1 -->
+    <div class="card">
+        <h2>VIX & Sentiment</h2>
+        <div class="row">
+            <span class="label">VIX</span>
+            <span id="vix" class="value">--</span>
+        </div>
+        <div class="row">
+            <span class="label">Sentiment</span>
+            <span id="vixSentiment" class="value">--</span>
+        </div>
+    </div>
+
+    <!-- API 2 -->
+    <div class="card">
+        <h2>PCR Analysis</h2>
+        <div class="row">
+            <span class="label">PCR</span>
+            <span id="pcr" class="value">--</span>
+        </div>
+        <div class="row">
+            <span class="label">Sentiment</span>
+            <span id="pcrSentiment" class="value">--</span>
+        </div>
+        <div class="row">
+            <span class="label">Action</span>
+            <span id="pcrAction" class="value">--</span>
+        </div>
+    </div>
+
+    <!-- API 3 -->
+    <div class="card">
+        <h2>RSI</h2>
+        <div class="row">
+            <span class="label">RSI (15 min)</span>
+            <span id="rsi15" class="value">--</span>
+        </div>
+        <div class="row">
+            <span class="label">RSI (1 Hr)</span>
+            <span id="rsi60" class="value">--</span>
+        </div>
+        <div class="row">
+            <span class="label">Sentiment</span>
+            <span id="rsiSentiment" class="value">--</span>
+        </div>
+    </div>
+
+</div>
+
+<div class="footer">
+    Auto-refresh every 5 minutes
+</div>
+
+<script>
+    const BASE_URL = "http://localhost:5000";
+
+    function sentimentClass(sentiment) {
+        if (!sentiment) return "";
+        sentiment = sentiment.toLowerCase();
+        if (sentiment.includes("bull")) return "bullish";
+        if (sentiment.includes("bear")) return "bearish";
+        return "neutral";
+    }
+
+    async function fetchAPI1() {
+        const res = await fetch(`${BASE_URL}/api/vix`);
+        const data = await res.json();
+
+        document.getElementById("vix").innerText = data.vix.toFixed(2);
+        const el = document.getElementById("vixSentiment");
+        el.innerText = data.sentiment;
+        el.className = `value ${sentimentClass(data.sentiment)}`;
+    }
+
+    async function fetchAPI2() {
+        const res = await fetch(`${BASE_URL}/api/pcr`);
+        const data = await res.json();
+
+        document.getElementById("pcr").innerText = data.pcr.toFixed(2);
+
+        const s = document.getElementById("pcrSentiment");
+        s.innerText = data.sentiment;
+        s.className = `value ${sentimentClass(data.sentiment)}`;
+
+        document.getElementById("pcrAction").innerText = data.action;
+    }
+
+    async function fetchAPI3() {
+        const res = await fetch(`${BASE_URL}/api/rsi`);
+        const data = await res.json();
+
+        document.getElementById("rsi15").innerText = data.rsi15min.toFixed(2);
+        document.getElementById("rsi60").innerText = data.rsi1hr.toFixed(2);
+
+        const s = document.getElementById("rsiSentiment");
+        s.innerText = data.sentiment;
+        s.className = `value ${sentimentClass(data.sentiment)}`;
+    }
+
+    async function refreshDashboard() {
+        try {
+            await Promise.all([
+                fetchAPI1(),
+                fetchAPI2(),
+                fetchAPI3()
+            ]);
+            console.log("Dashboard updated:", new Date().toLocaleTimeString());
+        } catch (err) {
+            console.error("Error updating dashboard", err);
+        }
+    }
+
+    // Initial load
+    refreshDashboard();
+
+    // Poll every 5 minutes (300000 ms)
+    setInterval(refreshDashboard, 300000);
+</script>
+
+</body>
+</html>
+
