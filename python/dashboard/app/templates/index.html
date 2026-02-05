@@ -71,11 +71,32 @@
 
 <div class="dashboard">
 
+    <!-- INDICES -->
+    <div class="card">
+        <h2>Index Spot Values</h2>
+        <div class="row">
+            <span class="label">NIFTY 50</span>
+            <span id="nifty50" class="value">--</span>
+        </div>
+        <div class="row">
+            <span class="label">BANK NIFTY</span>
+            <span id="banknifty" class="value">--</span>
+        </div>
+        <div class="row">
+            <span class="label">SENSEX</span>
+            <span id="sensex" class="value">--</span>
+        </div>
+        <div class="row">
+            <span class="label">Last Update</span>
+            <span id="indicesTime" class="value">--</span>
+        </div>
+    </div>
+
     <!-- API 1 -->
     <div class="card">
-        <h2>VIX & Sentiment</h2>
+        <h2>VIX</h2>
         <div class="row">
-            <span class="label">VIX</span>
+            <span class="label">Value</span>
             <span id="vix" class="value">--</span>
         </div>
         <div class="row">
@@ -86,7 +107,7 @@
 
     <!-- API 2 -->
     <div class="card">
-        <h2>PCR Analysis</h2>
+        <h2>PCR</h2>
         <div class="row">
             <span class="label">PCR</span>
             <span id="pcr" class="value">--</span>
@@ -105,11 +126,11 @@
     <div class="card">
         <h2>RSI</h2>
         <div class="row">
-            <span class="label">RSI (15 min)</span>
+            <span class="label">RSI (15m)</span>
             <span id="rsi15" class="value">--</span>
         </div>
         <div class="row">
-            <span class="label">RSI (1 Hr)</span>
+            <span class="label">RSI (1Hr)</span>
             <span id="rsi60" class="value">--</span>
         </div>
         <div class="row">
@@ -125,8 +146,6 @@
 </div>
 
 <script>
-    const BASE_URL = "http://localhost:5000";
-
     function sentimentClass(sentiment) {
         if (!sentiment) return "";
         sentiment = sentiment.toLowerCase();
@@ -135,8 +154,18 @@
         return "neutral";
     }
 
+    async function fetchIndices() {
+        const res = await fetch("/api/indices");
+        const data = await res.json();
+
+        document.getElementById("nifty50").innerText = data.NIFTY50?.toFixed(2);
+        document.getElementById("banknifty").innerText = data.BANKNIFTY?.toFixed(2);
+        document.getElementById("sensex").innerText = data.SENSEX?.toFixed(2);
+        document.getElementById("indicesTime").innerText = data.timestamp || "--";
+    }
+
     async function fetchAPI1() {
-        const res = await fetch(`${BASE_URL}/api/vix`);
+        const res = await fetch("/api/vix");
         const data = await res.json();
 
         document.getElementById("vix").innerText = data.vix.toFixed(2);
@@ -146,20 +175,19 @@
     }
 
     async function fetchAPI2() {
-        const res = await fetch(`${BASE_URL}/api/pcr`);
+        const res = await fetch("/api/pcr");
         const data = await res.json();
 
         document.getElementById("pcr").innerText = data.pcr.toFixed(2);
+        document.getElementById("pcrAction").innerText = data.action;
 
         const s = document.getElementById("pcrSentiment");
         s.innerText = data.sentiment;
         s.className = `value ${sentimentClass(data.sentiment)}`;
-
-        document.getElementById("pcrAction").innerText = data.action;
     }
 
     async function fetchAPI3() {
-        const res = await fetch(`${BASE_URL}/api/rsi`);
+        const res = await fetch("/api/rsi");
         const data = await res.json();
 
         document.getElementById("rsi15").innerText = data.rsi15min.toFixed(2);
@@ -173,21 +201,19 @@
     async function refreshDashboard() {
         try {
             await Promise.all([
+                fetchIndices(),
                 fetchAPI1(),
                 fetchAPI2(),
                 fetchAPI3()
             ]);
-            console.log("Dashboard updated:", new Date().toLocaleTimeString());
-        } catch (err) {
-            console.error("Error updating dashboard", err);
+            console.log("Dashboard refreshed", new Date().toLocaleTimeString());
+        } catch (e) {
+            console.error("Dashboard update failed", e);
         }
     }
 
-    // Initial load
     refreshDashboard();
-
-    // Poll every 5 minutes (300000 ms)
-    setInterval(refreshDashboard, 300000);
+    setInterval(refreshDashboard, 300000); // 5 minutes
 </script>
 
 </body>

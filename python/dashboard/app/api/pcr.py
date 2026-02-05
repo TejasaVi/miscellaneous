@@ -3,24 +3,34 @@ from pnsea import NSE
 
 PCR_INTERPRETATION = {
     "extreme_bullish": {
-        "pcr_range": (0.0, 0.3),
+        "pcr_range": (0.0, 0.4),
         "sentiment": "Over-bullish",
 		"action": "Buy ATM calls",
     },
     "bullish": {
-        "pcr_range": (0.3, 0.7),
+        "pcr_range": (0.4,0.5),
         "sentiment": "Bullish",
-		"action": "Buy In the money calls"
+        "action": "Buy in the nearest ITM CE",
+    },
+    "neutral_bullish": {
+        "pcr_range": (0.5, 0.7),
+        "sentiment": "Neutral to Bullish",
+		"action": "Wait for Bullish signal on PCR",
     },
     "neutral": {
-        "pcr_range": (0.7, 1.1),
+        "pcr_range": (0.7, 0.9),
         "sentiment": "Neutral",
 		"action": "Rangebound wait for either side move."
+    },
+    "neutral_bearish": {
+        "pcr_range": (0.9, 1.1),
+        "sentiment": "Neutral to Bearish",
+        "action": "Wait for Bearish signal on PCR",
     },
     "bearish": {
         "pcr_range": (1.1, 1.3),
         "sentiment": "Bearish",
-		"action": "Buy near OTM Calls with strict SL"
+		"action": "Buy near OTM Calls with strict SL",
     },
     "extreme_bearish": {
         "pcr_range": (1.3, float("inf")),
