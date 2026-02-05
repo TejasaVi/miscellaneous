@@ -20,30 +20,56 @@ h1 { text-align:center; margin-bottom:25px; }
 .card { position:relative; background:#111827; border-radius:12px; padding:20px; box-shadow:0 4px 12px rgba(0,0,0,0.4); transition:0.3s; overflow:hidden; }
 .card h2 { margin-top:0; font-size:18px; border-bottom:1px solid #374151; padding-bottom:8px; }
 
-.row { display:flex; justify-content:space-between; margin:5px 0; }
+.row { 
+    display:flex; 
+    justify-content:space-between; 
+    margin:5px 0; 
+    border-bottom: 1px solid #1f2937; 
+    padding-bottom: 4px; 
+}
+.row:last-child { border-bottom: none; }
 .label { color:#9ca3af; }
 .value { font-weight:bold; }
 
+/* Gradient bar */
 .gradient-bar {
-    position:absolute;
-    bottom:0; left:0;
-    height:6px;
-    width:100%;
-    border-radius:0 0 12px 12px;
+    position: relative;
+    height: 6px;
+    width: 100%;
+    border-radius: 0 0 12px 12px;
     background: linear-gradient(to right, #ff0000, #f87171, #facc15, #22c55e, #00ff80);
+    overflow: hidden;
+    margin-top: 10px;
 }
+
+/* Gradient fill */
+.gradient-fill {
+    position: absolute;
+    height: 100%;
+    width: 50%;
+    border-radius: 0 0 12px 12px;
+    background: rgba(255,255,255,0.2);
+    transition: width 0.5s;
+}
+
+/* Vertical black indicator line */
+.vertical-indicator {
+    position: absolute;
+    top: 0;
+    width: 2px;
+    height: 100%;
+    background: #000;
+    transition: left 0.5s;
+}
+
+/* Sentiment text colors */
+.value.bullish { color: #22c55e; font-weight:bold; }
+.value.strong-bullish { color: #00ff80; font-weight:bold; }
+.value.neutral { color: #facc15; font-weight:bold; }
+.value.bearish { color: #f87171; font-weight:bold; }
+.value.strong-bearish { color: #ff0000; font-weight:bold; }
 
 .footer { text-align:center; margin-top:25px; font-size:13px; color:#9ca3af; }
-
-/* Highlight bar by width based on sentiment (-2 to +2) */
-.card[data-sentiment] .gradient-fill {
-    height:100%;
-    width:50%; /* default */
-    border-radius: 0 0 12px 12px;
-    transition: width 0.5s;
-    position:absolute;
-    bottom:0; left:0;
-}
 </style>
 </head>
 <body>
@@ -55,7 +81,6 @@ h1 { text-align:center; margin-bottom:25px; }
     <div class="tab" data-tab="marketbias">Market Bias</div>
 </div>
 
-<!-- --- INDICATORS TAB --- -->
 <div id="indicators" class="tabcontent active">
     <div class="dashboard">
 
@@ -65,7 +90,10 @@ h1 { text-align:center; margin-bottom:25px; }
             <div class="row"><span class="label">NIFTY 50</span><span id="nifty50" class="value">--</span></div>
             <div class="row"><span class="label">BANK NIFTY</span><span id="banknifty" class="value">--</span></div>
             <div class="row"><span class="label">SENSEX</span><span id="sensex" class="value">--</span></div>
-            <div class="gradient-bar"><div class="gradient-fill"></div></div>
+            <div class="gradient-bar">
+                <div class="gradient-fill"></div>
+                <div class="vertical-indicator" id="cardIndicesIndicator"></div>
+            </div>
         </div>
 
         <!-- VIX -->
@@ -74,7 +102,10 @@ h1 { text-align:center; margin-bottom:25px; }
             <div class="row"><span class="label">Value</span><span id="vix" class="value">--</span></div>
             <div class="row"><span class="label">Sentiment</span><span id="vixSentiment" class="value">--</span></div>
             <div class="row"><span class="label">Action</span><span id="vixAction" class="value">--</span></div>
-            <div class="gradient-bar"><div class="gradient-fill"></div></div>
+            <div class="gradient-bar">
+                <div class="gradient-fill"></div>
+                <div class="vertical-indicator" id="cardVIXIndicator"></div>
+            </div>
         </div>
 
         <!-- PCR -->
@@ -83,7 +114,10 @@ h1 { text-align:center; margin-bottom:25px; }
             <div class="row"><span class="label">PCR</span><span id="pcr" class="value">--</span></div>
             <div class="row"><span class="label">Sentiment</span><span id="pcrSentiment" class="value">--</span></div>
             <div class="row"><span class="label">Action</span><span id="pcrAction" class="value">--</span></div>
-            <div class="gradient-bar"><div class="gradient-fill"></div></div>
+            <div class="gradient-bar">
+                <div class="gradient-fill"></div>
+                <div class="vertical-indicator" id="cardPCRIndicator"></div>
+            </div>
         </div>
 
         <!-- RSI -->
@@ -93,21 +127,26 @@ h1 { text-align:center; margin-bottom:25px; }
             <div class="row"><span class="label">RSI (1Hr)</span><span id="rsi60" class="value">--</span></div>
             <div class="row"><span class="label">Sentiment</span><span id="rsiSentiment" class="value">--</span></div>
             <div class="row"><span class="label">Action</span><span id="rsiAction" class="value">--</span></div>
-            <div class="gradient-bar"><div class="gradient-fill"></div></div>
+            <div class="gradient-bar">
+                <div class="gradient-fill"></div>
+                <div class="vertical-indicator" id="cardRSIIndicator"></div>
+            </div>
         </div>
 
-        <!-- MMI / Market Zone -->
+        <!-- MMI -->
         <div class="card" id="cardMMI" data-sentiment="0">
             <h2>Market Zone (MMI)</h2>
             <div class="row"><span class="label">Zone</span><span id="zoneLabel" class="value">--</span></div>
             <div class="row"><span class="label">Action</span><span id="mmiAction" class="value">--</span></div>
-            <div class="gradient-bar"><div class="gradient-fill"></div></div>
+            <div class="gradient-bar">
+                <div class="gradient-fill"></div>
+                <div class="vertical-indicator" id="cardMMIIndicator"></div>
+            </div>
         </div>
 
     </div>
 </div>
 
-<!-- --- MARKET BIAS TAB --- -->
 <div id="marketbias" class="tabcontent">
     <div class="dashboard">
         <div class="card" id="cardBias" data-sentiment="0">
@@ -119,7 +158,10 @@ h1 { text-align:center; margin-bottom:25px; }
             <div class="row"><span class="label">CE Strike</span><span id="ceStrike" class="value">--</span></div>
             <div class="row"><span class="label">PE Strike</span><span id="peStrike" class="value">--</span></div>
             <div class="row"><span class="label">Warnings</span><span id="strikeWarnings" class="value">--</span></div>
-            <div class="gradient-bar"><div class="gradient-fill"></div></div>
+            <div class="gradient-bar">
+                <div class="gradient-fill"></div>
+                <div class="vertical-indicator" id="cardBiasIndicator"></div>
+            </div>
         </div>
     </div>
 </div>
@@ -127,7 +169,7 @@ h1 { text-align:center; margin-bottom:25px; }
 <div class="footer">Auto-refresh every 5 minutes</div>
 
 <script>
-// Map sentiment text to numeric value (-2 → extreme bearish, 2 → extreme bullish)
+// --- Sentiment mapping ---
 function sentimentValue(sentiment){
     if(!sentiment) return 0;
     const s = sentiment.toLowerCase();
@@ -139,16 +181,61 @@ function sentimentValue(sentiment){
     return 0;
 }
 
-// Apply width of gradient-fill based on sentiment
+function sentimentClass(sentiment){
+    if(!sentiment) return "neutral";
+    const s = sentiment.toLowerCase();
+    if(s.includes("extreme buy") || s.includes("strong buy")) return "strong-bullish";
+    if(s.includes("buy")) return "bullish";
+    if(s.includes("neutral") || s.includes("hold")) return "neutral";
+    if(s.includes("sell")) return "bearish";
+    if(s.includes("extreme sell") || s.includes("strong sell")) return "strong-bearish";
+    return "neutral";
+}
+
 function applyGradientBar(cardId, sentiment){
     const val = sentimentValue(sentiment);
     const fill = document.querySelector(`#${cardId} .gradient-fill`);
-    // Map -2 → 0%, 0 → 50%, 2 → 100%
-    const width = 50 + val * 25; 
-    fill.style.width = width + "%";
+    const indicator = document.getElementById(`${cardId}Indicator`);
+    const widthPercent = 50 + val * 25; // -2 → 0%, 0 → 50%, 2 → 100%
+    fill.style.width = widthPercent + "%";
+    indicator.style.left = widthPercent + "%";
 }
 
-// --- Tabs ---
+function applySentimentColor(elementId, sentiment){
+    const el = document.getElementById(elementId);
+    el.className = "value " + sentimentClass(sentiment);
+    el.innerText = sentiment ?? "--";
+}
+
+// --- MMI zone color ---
+function mmiZoneClass(zone){
+    if(!zone) return "neutral";
+    const z = zone.toLowerCase();
+    if(z.includes("extreme fear")) return "strong-bearish";
+    if(z.includes("fear")) return "bearish";
+    if(z.includes("extreme greed")) return "strong-bullish";
+    if(z.includes("greed") && !z.includes("extreme")) return "bullish";
+    return "neutral";
+}
+
+function applyMMIColor(zone){
+    const el = document.getElementById("zoneLabel");
+    el.className = "value " + mmiZoneClass(zone);
+    el.innerText = zone ?? "--";
+}
+
+// Move vertical pointer according to numeric value (0-100)
+function applyMMIPointer(value){
+    const indicator = document.getElementById("cardMMIIndicator");
+    if(value !== undefined && !isNaN(value)){
+        const pct = Math.max(0, Math.min(100, value)); // clamp 0-100
+        indicator.style.left = pct + "%";
+    } else {
+        indicator.style.left = "50%";
+    }
+}
+
+// Tabs
 document.querySelectorAll(".tab").forEach(tab=>{
     tab.addEventListener("click",()=>{
         document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
@@ -158,7 +245,7 @@ document.querySelectorAll(".tab").forEach(tab=>{
     });
 });
 
-// --- Fetch Indicators ---
+// Fetch indicators
 async function fetchIndicators(){
     try {
         const [indicesRes, vixRes, pcrRes, rsiRes, mmiRes] = await Promise.all([
@@ -175,46 +262,44 @@ async function fetchIndicators(){
         const rsiData = await rsiRes.json();
         const mmiData = await mmiRes.json();
 
-        // --- Indices ---
         document.getElementById("nifty50").innerText = indices.NIFTY50?.toFixed(2) ?? "--";
         document.getElementById("banknifty").innerText = indices.BANKNIFTY?.toFixed(2) ?? "--";
         document.getElementById("sensex").innerText = indices.SENSEX?.toFixed(2) ?? "--";
         applyGradientBar("cardIndices", indices.sentiment);
 
-        // --- VIX ---
         document.getElementById("vix").innerText = vixData.vix?.toFixed(2) ?? "--";
-        document.getElementById("vixSentiment").innerText = vixData.sentiment ?? "--";
+        applySentimentColor("vixSentiment", vixData.sentiment);
         document.getElementById("vixAction").innerText = vixData.action ?? "--";
         applyGradientBar("cardVIX", vixData.sentiment);
 
-        // --- PCR ---
         document.getElementById("pcr").innerText = pcrData.pcr?.toFixed(2) ?? "--";
-        document.getElementById("pcrSentiment").innerText = pcrData.sentiment ?? "--";
+        applySentimentColor("pcrSentiment", pcrData.sentiment);
         document.getElementById("pcrAction").innerText = pcrData.action ?? "--";
         applyGradientBar("cardPCR", pcrData.sentiment);
 
-        // --- RSI ---
         document.getElementById("rsi15").innerText = rsiData.rsi15min?.toFixed(2) ?? "--";
         document.getElementById("rsi60").innerText = rsiData.rsi1hr?.toFixed(2) ?? "--";
-        document.getElementById("rsiSentiment").innerText = rsiData.sentiment ?? "--";
+        applySentimentColor("rsiSentiment", rsiData.sentiment);
         document.getElementById("rsiAction").innerText = rsiData.action ?? "--";
         applyGradientBar("cardRSI", rsiData.sentiment);
 
-        // --- MMI ---
-        document.getElementById("zoneLabel").innerText = mmiData.zone ?? "--";
-        //document.getElementById("mmiAction").innerText = mmiData.action ?? "--";
+        applyMMIColor(mmiData.zone);
+        applySentimentColor("mmiAction", mmiData.action);
         applyGradientBar("cardMMI", mmiData.sentiment);
+
+        // Move vertical pointer based on numeric MMI (0-100)
+        applyMMIPointer(mmiData.value);
 
     } catch(e){ console.error("Indicators fetch failed", e);}
 }
 
-// --- Fetch Market Bias ---
+// Fetch market bias
 async function fetchMarketBias(){
     try{
         const res = await fetch("/api/marketbias");
         const data = await res.json();
 
-        document.getElementById("biasLabel").innerText = data.bias ?? "--";
+        applySentimentColor("biasLabel", data.bias);
         document.getElementById("biasScore").innerText = data.score ?? "--";
         document.getElementById("vixValue").innerText = data.vix ?? "--";
         document.getElementById("suggestedPlay").innerText = data.action ?? "--";
@@ -227,7 +312,7 @@ async function fetchMarketBias(){
     } catch(e){ console.error("Market bias fetch failed", e);}
 }
 
-// --- Refresh ---
+// Refresh
 async function refreshDashboard(){
     await Promise.all([fetchIndicators(), fetchMarketBias()]);
     console.log("Dashboard refreshed", new Date().toLocaleTimeString());
