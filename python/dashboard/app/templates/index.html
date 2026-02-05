@@ -24,14 +24,12 @@ h1 { text-align:center; margin-bottom:25px; }
 .label { color:#9ca3af; }
 .value { font-weight:bold; }
 
-.bullish { color:#22c55e; }
-.bearish { color:#ef4444; }
-.neutral { color:#facc15; }
-.strong { text-shadow:0 0 8px currentColor; }
-
-.card.bullish { box-shadow:0 0 15px #22c55e; border:1px solid #22c55e; }
-.card.bearish { box-shadow:0 0 15px #ef4444; border:1px solid #ef4444; }
-.card.neutral { box-shadow:0 0 15px #facc15; border:1px solid #facc15; }
+/* --- Gradient Heatmap Colors --- */
+.card.bullish-2 { box-shadow:0 0 15px #00ff80; border:1px solid #00ff80; } /* Extreme Bullish */
+.card.bullish-1 { box-shadow:0 0 15px #22c55e; border:1px solid #22c55e; } /* Bullish */
+.card.neutral { box-shadow:0 0 15px #facc15; border:1px solid #facc15; }   /* Neutral */
+.card.bearish-1 { box-shadow:0 0 15px #f87171; border:1px solid #f87171; } /* Bearish */
+.card.bearish-2 { box-shadow:0 0 15px #ff0000; border:1px solid #ff0000; } /* Extreme Bearish */
 
 .footer { text-align:center; margin-top:25px; font-size:13px; color:#9ca3af; }
 </style>
@@ -55,8 +53,6 @@ h1 { text-align:center; margin-bottom:25px; }
             <div class="row"><span class="label">NIFTY 50</span><span id="nifty50" class="value">--</span></div>
             <div class="row"><span class="label">BANK NIFTY</span><span id="banknifty" class="value">--</span></div>
             <div class="row"><span class="label">SENSEX</span><span id="sensex" class="value">--</span></div>
-            <div class="row"><span class="label">Sentiment</span><span id="indicesSentiment" class="value">--</span></div>
-            <div class="row"><span class="label">Action</span><span id="indicesAction" class="value">--</span></div>
         </div>
 
         <!-- VIX -->
@@ -88,7 +84,6 @@ h1 { text-align:center; margin-bottom:25px; }
         <div class="card" id="cardMMI">
             <h2>Market Zone (MMI)</h2>
             <div class="row"><span class="label">Zone</span><span id="zoneLabel" class="value">--</span></div>
-            <div class="row"><span class="label">Sentiment</span><span id="mmiSentiment" class="value">--</span></div>
             <div class="row"><span class="label">Action</span><span id="mmiAction" class="value">--</span></div>
         </div>
 
@@ -114,17 +109,21 @@ h1 { text-align:center; margin-bottom:25px; }
 <div class="footer">Auto-refresh every 5 minutes</div>
 
 <script>
+// --- Gradient Sentiment Mapping ---
 function sentimentClass(sentiment){
     if(!sentiment) return "neutral";
-    const s=sentiment.toLowerCase();
-    if(s.includes("buy")) return "bullish";
-    if(s.includes("sell")) return "bearish";
+    const s = sentiment.toLowerCase();
+    if(s.includes("extreme buy") || s.includes("strong buy")) return "bullish-2";
+    if(s.includes("buy")) return "bullish-1";
+    if(s.includes("neutral") || s.includes("hold")) return "neutral";
+    if(s.includes("sell")) return "bearish-1";
+    if(s.includes("extreme sell") || s.includes("strong sell")) return "bearish-2";
     return "neutral";
 }
 
 function applyCardHighlight(cardId, sentiment){
-    const card=document.getElementById(cardId);
-    card.classList.remove("bullish","bearish","neutral");
+    const card = document.getElementById(cardId);
+    card.classList.remove("bullish-2","bullish-1","neutral","bearish-1","bearish-2");
     card.classList.add(sentimentClass(sentiment));
 }
 
@@ -159,8 +158,6 @@ async function fetchIndicators(){
         document.getElementById("nifty50").innerText = indices.NIFTY50?.toFixed(2) ?? "--";
         document.getElementById("banknifty").innerText = indices.BANKNIFTY?.toFixed(2) ?? "--";
         document.getElementById("sensex").innerText = indices.SENSEX?.toFixed(2) ?? "--";
-        document.getElementById("indicesSentiment").innerText = indices.sentiment ?? "--";
-        document.getElementById("indicesAction").innerText = indices.action ?? "--";
         applyCardHighlight("cardIndices", indices.sentiment);
 
         // --- VIX ---
@@ -184,8 +181,7 @@ async function fetchIndicators(){
 
         // --- MMI ---
         document.getElementById("zoneLabel").innerText = mmiData.zone ?? "--";
-        document.getElementById("mmiSentiment").innerText = mmiData.sentiment ?? "--";
-        document.getElementById("mmiAction").innerText = mmiData.action ?? "--";
+        //document.getElementById("mmiAction").innerText = mmiData.action ?? "--";
         applyCardHighlight("cardMMI", mmiData.sentiment);
 
     } catch(e){ console.error("Indicators fetch failed", e);}
