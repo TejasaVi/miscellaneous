@@ -45,12 +45,13 @@ def market_bias_engine(mmi, rsi15, rsi60, pcr, vix):
 
     return score, bias, action
 
+
 def suggest_option_strikes(
     spot: float,
     bias: str,
     action: str,
     vix: float,
-    expiry_type: str = "WEEKLY"  # WEEKLY or MONTHLY
+    expiry_type: str = "WEEKLY",  # WEEKLY or MONTHLY
 ):
     """
     Returns CE/PE strike suggestions with warnings
@@ -74,7 +75,7 @@ def suggest_option_strikes(
         "ce_strike": None,
         "pe_strike": None,
         "distance": base,
-        "warnings": []
+        "warnings": [],
     }
 
     # --- Step 2: Strategy based strikes ---
@@ -102,7 +103,9 @@ def suggest_option_strikes(
 
     # --- Step 3: Warnings ---
     if vix < 12 and "sell" in action:
-        result["warnings"].append("⚠️ Low VIX: Premiums are cheap, selling may underperform")
+        result["warnings"].append(
+            "⚠️ Low VIX: Premiums are cheap, selling may underperform"
+        )
 
     if vix > 20:
         result["warnings"].append("⚠️ High VIX: Expect wild swings & large premiums")
@@ -111,4 +114,3 @@ def suggest_option_strikes(
         result["warnings"].append("⏰ Weekly expiry: Fast theta decay")
 
     return result
-

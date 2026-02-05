@@ -78,5 +78,4 @@ pcr_bp = Blueprint("pcr", __name__)
 @pcr_bp.route("/pcr", methods=["GET"])
 def pcr_check():
     pcr = get_current_expiry_pcr()
-    print(pcr)
     return jsonify(pcr)

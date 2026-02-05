@@ -14,7 +14,6 @@ def get_indices():
         data = nse_client.fetch_indices()
         bse_value = fetch_sensex()
         data['SENSEX'] = bse_value['value']
-        print(data)
         return jsonify(data)
 
     except Exception as e:
