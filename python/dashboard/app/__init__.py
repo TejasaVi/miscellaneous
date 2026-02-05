@@ -2,9 +2,12 @@ from flask import Flask, render_template
 
 from app.config import Config
 from app.api.vix import vix_bp
+from app.api.mmi import mmi_bp
 from app.api.pcr import pcr_bp
 from app.api.rsi import rsi_bp
 from app.api.indices import indices_bp
+from app.api.market_bias import marketbias_bp
+
 
 def create_app(config_class=Config):
     app = Flask(__name__)
@@ -18,6 +21,8 @@ def create_app(config_class=Config):
     app.register_blueprint(vix_bp, url_prefix="/api")
     app.register_blueprint(pcr_bp, url_prefix="/api")
     app.register_blueprint(rsi_bp, url_prefix="/api")
+    app.register_blueprint(mmi_bp, url_prefix="/api")
+    app.register_blueprint(marketbias_bp, url_prefix="/api")
     app.register_blueprint(indices_bp, url_prefix="/api")
 
     return app

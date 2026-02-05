@@ -57,6 +57,10 @@
         .bearish { color: #ef4444; }
         .neutral { color: #facc15; }
 
+        .strong {
+            text-shadow: 0 0 8px currentColor;
+        }
+
         .footer {
             text-align: center;
             margin-top: 25px;
@@ -74,73 +78,41 @@
     <!-- INDICES -->
     <div class="card">
         <h2>Index Spot Values</h2>
-        <div class="row">
-            <span class="label">NIFTY 50</span>
-            <span id="nifty50" class="value">--</span>
-        </div>
-        <div class="row">
-            <span class="label">BANK NIFTY</span>
-            <span id="banknifty" class="value">--</span>
-        </div>
-        <div class="row">
-            <span class="label">SENSEX</span>
-            <span id="sensex" class="value">--</span>
-        </div>
-        <div class="row">
-            <span class="label">Last Update</span>
-            <span id="indicesTime" class="value">--</span>
-        </div>
+        <div class="row"><span class="label">NIFTY 50</span><span id="nifty50" class="value">--</span></div>
+        <div class="row"><span class="label">BANK NIFTY</span><span id="banknifty" class="value">--</span></div>
+        <div class="row"><span class="label">SENSEX</span><span id="sensex" class="value">--</span></div>
+        <div class="row"><span class="label">Last Update</span><span id="indicesTime" class="value">--</span></div>
     </div>
 
-    <!-- API 1 -->
+    <!-- VIX -->
     <div class="card">
         <h2>VIX</h2>
-        <div class="row">
-            <span class="label">Value</span>
-            <span id="vix" class="value">--</span>
-        </div>
-        <div class="row">
-            <span class="label">Sentiment</span>
-            <span id="vixSentiment" class="value">--</span>
-        </div>
-        <div class="row">
-            <span class="label">Action</span>
-            <span id="vixAction" class="value">--</span>
-        </div>
+        <div class="row"><span class="label">Value</span><span id="vix" class="value">--</span></div>
+        <div class="row"><span class="label">Sentiment</span><span id="vixSentiment" class="value">--</span></div>
+        <div class="row"><span class="label">Action</span><span id="vixAction" class="value">--</span></div>
     </div>
 
-    <!-- API 2 -->
+    <!-- PCR -->
     <div class="card">
         <h2>PCR</h2>
-        <div class="row">
-            <span class="label">PCR</span>
-            <span id="pcr" class="value">--</span>
-        </div>
-        <div class="row">
-            <span class="label">Sentiment</span>
-            <span id="pcrSentiment" class="value">--</span>
-        </div>
-        <div class="row">
-            <span class="label">Action</span>
-            <span id="pcrAction" class="value">--</span>
-        </div>
+        <div class="row"><span class="label">PCR</span><span id="pcr" class="value">--</span></div>
+        <div class="row"><span class="label">Sentiment</span><span id="pcrSentiment" class="value">--</span></div>
+        <div class="row"><span class="label">Action</span><span id="pcrAction" class="value">--</span></div>
     </div>
 
-    <!-- API 3 -->
+    <!-- RSI -->
     <div class="card">
         <h2>RSI</h2>
-        <div class="row">
-            <span class="label">RSI (15m)</span>
-            <span id="rsi15" class="value">--</span>
-        </div>
-        <div class="row">
-            <span class="label">RSI (1Hr)</span>
-            <span id="rsi60" class="value">--</span>
-        </div>
-        <div class="row">
-            <span class="label">Sentiment</span>
-            <span id="rsiSentiment" class="value">--</span>
-        </div>
+        <div class="row"><span class="label">RSI (15m)</span><span id="rsi15" class="value">--</span></div>
+        <div class="row"><span class="label">RSI (1Hr)</span><span id="rsi60" class="value">--</span></div>
+        <div class="row"><span class="label">Sentiment</span><span id="rsiSentiment" class="value">--</span></div>
+    </div>
+
+    <!-- NEW API -->
+    <div class="card">
+        <h2>Market Zone</h2>
+        <div class="row"><span class="label">Value</span><span id="zoneValue" class="value">--</span></div>
+        <div class="row"><span class="label">Zone</span><span id="zoneLabel" class="value">--</span></div>
     </div>
 
 </div>
@@ -152,74 +124,76 @@
 <script>
     function sentimentClass(sentiment) {
         if (!sentiment) return "";
-        sentiment = sentiment.toLowerCase();
-        if (sentiment.includes("bull")) return "bullish";
-        if (sentiment.includes("bear")) return "bearish";
+        const s = sentiment.toLowerCase();
+        if (s.includes("buy")) return "bullish";
+        if (s.includes("sell")) return "bearish";
         return "neutral";
+    }
+
+    function applySentiment(el, sentiment) {
+        el.innerText = sentiment || "--";
+        el.className = `value ${sentimentClass(sentiment)}`;
+        if (sentiment && sentiment.toLowerCase().includes("strong")) {
+            el.classList.add("strong");
+        }
     }
 
     async function fetchIndices() {
         const res = await fetch("/api/indices");
-        const data = await res.json();
-
-        document.getElementById("nifty50").innerText = data.NIFTY50?.toFixed(2);
-        document.getElementById("banknifty").innerText = data.BANKNIFTY?.toFixed(2);
-        document.getElementById("sensex").innerText = data.SENSEX?.toFixed(2);
-        document.getElementById("indicesTime").innerText = data.timestamp || "--";
+        const d = await res.json();
+        document.getElementById("nifty50").innerText = d.NIFTY50?.toFixed(2) ?? "--";
+        document.getElementById("banknifty").innerText = d.BANKNIFTY?.toFixed(2) ?? "--";
+        document.getElementById("sensex").innerText = d.SENSEX?.toFixed(2) ?? "--";
+        document.getElementById("indicesTime").innerText = d.timestamp ?? "--";
     }
 
-    async function fetchAPI1() {
-        const res = await fetch("/api/vix");
-        const data = await res.json();
-
-        document.getElementById("vix").innerText = data.vix.toFixed(2);
-        document.getElementById("vixAction").innerText = data.action;
-
-		const el = document.getElementById("vixSentiment");
-        el.innerText = data.sentiment;
-        el.className = `value ${sentimentClass(data.sentiment)}`;
+    async function fetchVIX() {
+        const d = await (await fetch("/api/vix")).json();
+        document.getElementById("vix").innerText = d.vix?.toFixed(2) ?? "--";
+        document.getElementById("vixAction").innerText = d.action ?? "--";
+        applySentiment(document.getElementById("vixSentiment"), d.sentiment);
     }
 
-    async function fetchAPI2() {
-        const res = await fetch("/api/pcr");
-        const data = await res.json();
-
-        document.getElementById("pcr").innerText = data.pcr.toFixed(2);
-        document.getElementById("pcrAction").innerText = data.action;
-
-        const s = document.getElementById("pcrSentiment");
-        s.innerText = data.sentiment;
-        s.className = `value ${sentimentClass(data.sentiment)}`;
+    async function fetchPCR() {
+        const d = await (await fetch("/api/pcr")).json();
+        document.getElementById("pcr").innerText = d.pcr?.toFixed(2) ?? "--";
+        document.getElementById("pcrAction").innerText = d.action ?? "--";
+        applySentiment(document.getElementById("pcrSentiment"), d.sentiment);
     }
 
-    async function fetchAPI3() {
-        const res = await fetch("/api/rsi");
-        const data = await res.json();
+    async function fetchRSI() {
+        const d = await (await fetch("/api/rsi")).json();
+        document.getElementById("rsi15").innerText = d.rsi15min?.toFixed(2) ?? "--";
+        document.getElementById("rsi60").innerText = d.rsi1hr?.toFixed(2) ?? "--";
+        applySentiment(document.getElementById("rsiSentiment"), d.sentiment);
+    }
 
-        document.getElementById("rsi15").innerText = data.rsi15min.toFixed(2);
-        document.getElementById("rsi60").innerText = data.rsi1hr.toFixed(2);
+    async function fetchMMI() {
+        const d = await (await fetch("/api/mmi")).json();
+        document.getElementById("zoneValue").innerText = d.value?.toFixed(2) ?? "--";
 
-        const s = document.getElementById("rsiSentiment");
-        s.innerText = data.sentiment;
-        s.className = `value ${sentimentClass(data.sentiment)}`;
+        const z = document.getElementById("zoneLabel");
+        z.innerText = d.zone ?? "--";
+        z.className = `value ${sentimentClass(d.zone)}`;
     }
 
     async function refreshDashboard() {
         try {
             await Promise.all([
                 fetchIndices(),
-                fetchAPI1(),
-                fetchAPI2(),
-                fetchAPI3()
+                fetchVIX(),
+                fetchPCR(),
+                fetchRSI(),
+                fetchMMI()
             ]);
             console.log("Dashboard refreshed", new Date().toLocaleTimeString());
         } catch (e) {
-            console.error("Dashboard update failed", e);
+            console.error("Dashboard refresh failed", e);
         }
     }
 
     refreshDashboard();
-    setInterval(refreshDashboard, 300000); // 5 minutes
+    setInterval(refreshDashboard, 300000);
 </script>
 
 </body>
