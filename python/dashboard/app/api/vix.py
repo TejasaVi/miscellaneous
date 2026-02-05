@@ -56,14 +56,28 @@ def vix_sentiment(vix):
     else:
         return "Capitulation, Extreme fear, contrarian opportunity"
 
+def vix_action(vix):
+    if vix < 10:
+        return "carry position trades next day, movment will be only in the first 15min candle and rangebound throughout the day unless markets break range, scalping for 2-3 point in ATM options work well."
+    elif 10 <= vix < 12:
+        return "buy ATM options in the direction of market, market will move is same direction throughout the day."
+    elif 12 <= vix < 15:
+        return "Buy OTM options for quick scalping, dont hold for more then 2mins"
+    elif 15 <= vix < 20:
+        return "Avoid options trade, quick and large spikes are seen"
+    elif  vix > 20:
+        return "Avoid options trade in market"
 
 @vix_bp.route("/vix", methods=["GET"])
 def vix_check():
     vix = get_india_vix()
     sentiment = vix_sentiment(vix["value"])
+    action = vix_action(vix["value"])
+
     return jsonify(
         {
             "vix": vix["value"],
             "sentiment": sentiment,
+            "action": action,
         }
     )

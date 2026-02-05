@@ -103,6 +103,10 @@
             <span class="label">Sentiment</span>
             <span id="vixSentiment" class="value">--</span>
         </div>
+        <div class="row">
+            <span class="label">Action</span>
+            <span id="vixAction" class="value">--</span>
+        </div>
     </div>
 
     <!-- API 2 -->
@@ -169,7 +173,9 @@
         const data = await res.json();
 
         document.getElementById("vix").innerText = data.vix.toFixed(2);
-        const el = document.getElementById("vixSentiment");
+        document.getElementById("vixAction").innerText = data.action;
+
+		const el = document.getElementById("vixSentiment");
         el.innerText = data.sentiment;
         el.className = `value ${sentimentClass(data.sentiment)}`;
     }
