@@ -17,21 +17,33 @@ h1 { text-align:center; margin-bottom:25px; }
 
 .dashboard { display:grid; grid-template-columns: repeat(auto-fit, minmax(280px,1fr)); gap:20px; }
 
-.card { background:#111827; border-radius:12px; padding:20px; box-shadow:0 4px 12px rgba(0,0,0,0.4); transition:0.3s; }
+.card { position:relative; background:#111827; border-radius:12px; padding:20px; box-shadow:0 4px 12px rgba(0,0,0,0.4); transition:0.3s; overflow:hidden; }
 .card h2 { margin-top:0; font-size:18px; border-bottom:1px solid #374151; padding-bottom:8px; }
 
 .row { display:flex; justify-content:space-between; margin:5px 0; }
 .label { color:#9ca3af; }
 .value { font-weight:bold; }
 
-/* --- Gradient Heatmap Colors --- */
-.card.bullish-2 { box-shadow:0 0 15px #00ff80; border:1px solid #00ff80; } /* Extreme Bullish */
-.card.bullish-1 { box-shadow:0 0 15px #22c55e; border:1px solid #22c55e; } /* Bullish */
-.card.neutral { box-shadow:0 0 15px #facc15; border:1px solid #facc15; }   /* Neutral */
-.card.bearish-1 { box-shadow:0 0 15px #f87171; border:1px solid #f87171; } /* Bearish */
-.card.bearish-2 { box-shadow:0 0 15px #ff0000; border:1px solid #ff0000; } /* Extreme Bearish */
+.gradient-bar {
+    position:absolute;
+    bottom:0; left:0;
+    height:6px;
+    width:100%;
+    border-radius:0 0 12px 12px;
+    background: linear-gradient(to right, #ff0000, #f87171, #facc15, #22c55e, #00ff80);
+}
 
 .footer { text-align:center; margin-top:25px; font-size:13px; color:#9ca3af; }
+
+/* Highlight bar by width based on sentiment (-2 to +2) */
+.card[data-sentiment] .gradient-fill {
+    height:100%;
+    width:50%; /* default */
+    border-radius: 0 0 12px 12px;
+    transition: width 0.5s;
+    position:absolute;
+    bottom:0; left:0;
+}
 </style>
 </head>
 <body>
@@ -48,43 +60,48 @@ h1 { text-align:center; margin-bottom:25px; }
     <div class="dashboard">
 
         <!-- INDICES -->
-        <div class="card" id="cardIndices">
+        <div class="card" id="cardIndices" data-sentiment="0">
             <h2>Index Spot Values</h2>
             <div class="row"><span class="label">NIFTY 50</span><span id="nifty50" class="value">--</span></div>
             <div class="row"><span class="label">BANK NIFTY</span><span id="banknifty" class="value">--</span></div>
             <div class="row"><span class="label">SENSEX</span><span id="sensex" class="value">--</span></div>
+            <div class="gradient-bar"><div class="gradient-fill"></div></div>
         </div>
 
         <!-- VIX -->
-        <div class="card" id="cardVIX">
+        <div class="card" id="cardVIX" data-sentiment="0">
             <h2>VIX</h2>
             <div class="row"><span class="label">Value</span><span id="vix" class="value">--</span></div>
             <div class="row"><span class="label">Sentiment</span><span id="vixSentiment" class="value">--</span></div>
             <div class="row"><span class="label">Action</span><span id="vixAction" class="value">--</span></div>
+            <div class="gradient-bar"><div class="gradient-fill"></div></div>
         </div>
 
         <!-- PCR -->
-        <div class="card" id="cardPCR">
+        <div class="card" id="cardPCR" data-sentiment="0">
             <h2>PCR</h2>
             <div class="row"><span class="label">PCR</span><span id="pcr" class="value">--</span></div>
             <div class="row"><span class="label">Sentiment</span><span id="pcrSentiment" class="value">--</span></div>
             <div class="row"><span class="label">Action</span><span id="pcrAction" class="value">--</span></div>
+            <div class="gradient-bar"><div class="gradient-fill"></div></div>
         </div>
 
         <!-- RSI -->
-        <div class="card" id="cardRSI">
+        <div class="card" id="cardRSI" data-sentiment="0">
             <h2>RSI</h2>
             <div class="row"><span class="label">RSI (15m)</span><span id="rsi15" class="value">--</span></div>
             <div class="row"><span class="label">RSI (1Hr)</span><span id="rsi60" class="value">--</span></div>
             <div class="row"><span class="label">Sentiment</span><span id="rsiSentiment" class="value">--</span></div>
             <div class="row"><span class="label">Action</span><span id="rsiAction" class="value">--</span></div>
+            <div class="gradient-bar"><div class="gradient-fill"></div></div>
         </div>
 
         <!-- MMI / Market Zone -->
-        <div class="card" id="cardMMI">
+        <div class="card" id="cardMMI" data-sentiment="0">
             <h2>Market Zone (MMI)</h2>
             <div class="row"><span class="label">Zone</span><span id="zoneLabel" class="value">--</span></div>
             <div class="row"><span class="label">Action</span><span id="mmiAction" class="value">--</span></div>
+            <div class="gradient-bar"><div class="gradient-fill"></div></div>
         </div>
 
     </div>
@@ -93,7 +110,7 @@ h1 { text-align:center; margin-bottom:25px; }
 <!-- --- MARKET BIAS TAB --- -->
 <div id="marketbias" class="tabcontent">
     <div class="dashboard">
-        <div class="card" id="cardBias">
+        <div class="card" id="cardBias" data-sentiment="0">
             <h2>Market Bias Summary</h2>
             <div class="row"><span class="label">Bias</span><span id="biasLabel" class="value">--</span></div>
             <div class="row"><span class="label">Score</span><span id="biasScore" class="value">--</span></div>
@@ -102,6 +119,7 @@ h1 { text-align:center; margin-bottom:25px; }
             <div class="row"><span class="label">CE Strike</span><span id="ceStrike" class="value">--</span></div>
             <div class="row"><span class="label">PE Strike</span><span id="peStrike" class="value">--</span></div>
             <div class="row"><span class="label">Warnings</span><span id="strikeWarnings" class="value">--</span></div>
+            <div class="gradient-bar"><div class="gradient-fill"></div></div>
         </div>
     </div>
 </div>
@@ -109,22 +127,25 @@ h1 { text-align:center; margin-bottom:25px; }
 <div class="footer">Auto-refresh every 5 minutes</div>
 
 <script>
-// --- Gradient Sentiment Mapping ---
-function sentimentClass(sentiment){
-    if(!sentiment) return "neutral";
+// Map sentiment text to numeric value (-2 → extreme bearish, 2 → extreme bullish)
+function sentimentValue(sentiment){
+    if(!sentiment) return 0;
     const s = sentiment.toLowerCase();
-    if(s.includes("extreme buy") || s.includes("strong buy")) return "bullish-2";
-    if(s.includes("buy")) return "bullish-1";
-    if(s.includes("neutral") || s.includes("hold")) return "neutral";
-    if(s.includes("sell")) return "bearish-1";
-    if(s.includes("extreme sell") || s.includes("strong sell")) return "bearish-2";
-    return "neutral";
+    if(s.includes("extreme buy") || s.includes("strong buy")) return 2;
+    if(s.includes("buy")) return 1;
+    if(s.includes("neutral") || s.includes("hold")) return 0;
+    if(s.includes("sell")) return -1;
+    if(s.includes("extreme sell") || s.includes("strong sell")) return -2;
+    return 0;
 }
 
-function applyCardHighlight(cardId, sentiment){
-    const card = document.getElementById(cardId);
-    card.classList.remove("bullish-2","bullish-1","neutral","bearish-1","bearish-2");
-    card.classList.add(sentimentClass(sentiment));
+// Apply width of gradient-fill based on sentiment
+function applyGradientBar(cardId, sentiment){
+    const val = sentimentValue(sentiment);
+    const fill = document.querySelector(`#${cardId} .gradient-fill`);
+    // Map -2 → 0%, 0 → 50%, 2 → 100%
+    const width = 50 + val * 25; 
+    fill.style.width = width + "%";
 }
 
 // --- Tabs ---
@@ -158,31 +179,31 @@ async function fetchIndicators(){
         document.getElementById("nifty50").innerText = indices.NIFTY50?.toFixed(2) ?? "--";
         document.getElementById("banknifty").innerText = indices.BANKNIFTY?.toFixed(2) ?? "--";
         document.getElementById("sensex").innerText = indices.SENSEX?.toFixed(2) ?? "--";
-        applyCardHighlight("cardIndices", indices.sentiment);
+        applyGradientBar("cardIndices", indices.sentiment);
 
         // --- VIX ---
         document.getElementById("vix").innerText = vixData.vix?.toFixed(2) ?? "--";
         document.getElementById("vixSentiment").innerText = vixData.sentiment ?? "--";
         document.getElementById("vixAction").innerText = vixData.action ?? "--";
-        applyCardHighlight("cardVIX", vixData.sentiment);
+        applyGradientBar("cardVIX", vixData.sentiment);
 
         // --- PCR ---
         document.getElementById("pcr").innerText = pcrData.pcr?.toFixed(2) ?? "--";
         document.getElementById("pcrSentiment").innerText = pcrData.sentiment ?? "--";
         document.getElementById("pcrAction").innerText = pcrData.action ?? "--";
-        applyCardHighlight("cardPCR", pcrData.sentiment);
+        applyGradientBar("cardPCR", pcrData.sentiment);
 
         // --- RSI ---
         document.getElementById("rsi15").innerText = rsiData.rsi15min?.toFixed(2) ?? "--";
         document.getElementById("rsi60").innerText = rsiData.rsi1hr?.toFixed(2) ?? "--";
         document.getElementById("rsiSentiment").innerText = rsiData.sentiment ?? "--";
         document.getElementById("rsiAction").innerText = rsiData.action ?? "--";
-        applyCardHighlight("cardRSI", rsiData.sentiment);
+        applyGradientBar("cardRSI", rsiData.sentiment);
 
         // --- MMI ---
         document.getElementById("zoneLabel").innerText = mmiData.zone ?? "--";
         //document.getElementById("mmiAction").innerText = mmiData.action ?? "--";
-        applyCardHighlight("cardMMI", mmiData.sentiment);
+        applyGradientBar("cardMMI", mmiData.sentiment);
 
     } catch(e){ console.error("Indicators fetch failed", e);}
 }
@@ -201,8 +222,7 @@ async function fetchMarketBias(){
         document.getElementById("peStrike").innerText = data.strikes?.pe_strike ?? "--";
         document.getElementById("strikeWarnings").innerText = (data.strikes?.warnings||[]).join(", ") || "--";
 
-        // Highlight Market Bias card
-        applyCardHighlight("cardBias", data.bias ?? "neutral");
+        applyGradientBar("cardBias", data.bias ?? "neutral");
 
     } catch(e){ console.error("Market bias fetch failed", e);}
 }
