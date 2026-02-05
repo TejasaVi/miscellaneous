@@ -4,7 +4,7 @@ from app.api.vix import get_india_vix
 from app.api.mmi import fetch_mmi
 from app.api.pcr import get_current_expiry_pcr
 from app.api.rsi import get_nifty_rsi
-from app.services.market_bias import market_bias_engine, suggest_option_strikes
+from app.services.market_bias import option_signal_engine
 
 
 def define_market_bias():
@@ -23,23 +23,17 @@ def define_market_bias():
     rsi15 = float(rsi15_data["rsi_value"].iloc[0])
 
     # ---- Bias Engine ----
-    score, bias, action = market_bias_engine(
-        mmi_zone, rsi15=rsi15, rsi60=rsi60, pcr=pcr, vix=vix
-    )
     nifty_spot = 25642
-    strikes = suggest_option_strikes(
-        spot=nifty_spot, bias=bias, action=action, vix=vix, expiry_type="WEEKLY"
+    signal = option_signal_engine(
+        spot=nifty_spot,
+        mmi=mmi_zone,
+        rsi15=rsi15,
+        rsi60=rsi60,
+        pcr=pcr,
+        vix=vix,
+        expiry_type="WEEKLY",
     )
-    return jsonify(
-        {
-            "bias": bias,
-            "action": action,
-            "inputs": {"mmi_zone": mmi_zone, "pcr": pcr, "rsi15": rsi15, "rsi60": rsi60},
-            "score": score,
-            "vix": vix,
-            "strikes": strikes,
-        }
-    )
+    return jsonify(signal)
 
 
 marketbias_bp = Blueprint("market_bias", __name__)

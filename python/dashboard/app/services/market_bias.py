@@ -1,7 +1,20 @@
-def market_bias_engine(mmi, rsi15, rsi60, pcr, vix):
-    score = 50  # 🔑 neutral baseline
+import json
 
-    # --- MMI ---
+def option_signal_engine(mmi, rsi15, rsi60, pcr, vix, spot, expiry_type="WEEKLY"):
+    """
+    Returns a JSON with:
+    - score (0-100)
+    - bias (Bullish/Bearish/Neutral)
+    - primary_action
+    - strategy_list
+    - strikes for CE, PE, spreads, Iron Condor, Butterfly, Calendar
+    - warnings
+    """
+
+    # --- Step 1: Calculate Bias Score ---
+    score = 50  # neutral baseline
+
+    # MMI
     if "Extreme Fear" in mmi:
         score += 20
     elif "Fear" in mmi:
@@ -11,53 +24,53 @@ def market_bias_engine(mmi, rsi15, rsi60, pcr, vix):
     elif "Extreme Greed" in mmi:
         score -= 20
 
-    # --- RSI ---
-    if rsi15 < 30 and rsi60 < 40:
-        score += 15
-    elif rsi15 > 70 and rsi60 > 60:
-        score -= 15
+    # RSI
+    if isinstance(rsi15, (int, float)) and isinstance(rsi60, (int, float)):
+        if rsi15 < 30 and rsi60 < 40:
+            score += 15
+        elif rsi15 > 70 and rsi60 > 60:
+            score -= 15
 
-    # --- PCR ---
-    if pcr < 0.7:
-        score -= 15
-    elif pcr > 1.3:
-        score += 15
+    # PCR
+    if isinstance(pcr, (int, float)):
+        if pcr < 0.7:
+            score -= 15
+        elif pcr > 1.3:
+            score += 15
 
-    # --- VIX ---
-    if vix < 14:
-        score += 10
-    elif vix > 18:
-        score -= 10
+    # VIX
+    if isinstance(vix, (int, float)):
+        if vix < 14:
+            score += 10
+        elif vix > 18:
+            score -= 10
 
-    # --- Clamp ---
+    # Clamp
     score = max(0, min(score, 100))
 
-    # --- Decision ---
+    # --- Step 2: Determine Bias & Primary Action ---
     if score >= 65:
         bias = "Bullish"
-        action = "Buy CE on dips"
+        primary_action = "Buy Calls / Bullish Spread"
+        strategy_list = [
+            "Bull Call Spread", "Bull Put Spread", "Long Straddle",
+            "Long Strangle", "Iron Condor", "Butterfly Spread", "Calendar Spread"
+        ]
     elif score <= 35:
         bias = "Bearish"
-        action = "Sell rallies / Buy PE"
+        primary_action = "Buy Puts / Bearish Spread"
+        strategy_list = [
+            "Bear Put Spread", "Bear Call Spread", "Long Straddle",
+            "Long Strangle", "Iron Condor", "Butterfly Spread", "Calendar Spread"
+        ]
     else:
         bias = "Neutral"
-        action = "Sell strangle"
+        primary_action = "Long Straddle / Long Strangle"
+        strategy_list = [
+            "Long Straddle", "Long Strangle", "Iron Condor", "Butterfly Spread", "Calendar Spread"
+        ]
 
-    return score, bias, action
-
-
-def suggest_option_strikes(
-    spot: float,
-    bias: str,
-    action: str,
-    vix: float,
-    expiry_type: str = "WEEKLY",  # WEEKLY or MONTHLY
-):
-    """
-    Returns CE/PE strike suggestions with warnings
-    """
-
-    # --- Step 1: Determine base distance ---
+    # --- Step 3: Determine base distance for strikes ---
     if vix < 12:
         base = 50 if expiry_type == "WEEKLY" else 100
     elif vix < 16:
@@ -67,50 +80,69 @@ def suggest_option_strikes(
     else:
         base = 250 if expiry_type == "WEEKLY" else 400
 
-    # Round spot to nearest 50
+    # Round spot to nearest 50 for ATM
     atm = round(spot / 50) * 50
 
-    result = {
-        "atm": atm,
-        "ce_strike": None,
-        "pe_strike": None,
-        "distance": base,
-        "warnings": [],
+    # --- Step 4: Populate Strikes ---
+    strikes = {
+        "ce_strike": atm,
+        "pe_strike": atm,
+        "spread_ce": {"buy": None, "sell": None},
+        "spread_pe": {"buy": None, "sell": None},
+        "iron_condor": {"sell_ce": None, "buy_ce": None, "sell_pe": None, "buy_pe": None},
+        "butterfly": {"buy_lower": None, "sell": None, "buy_upper": None},
+        "calendar": {"ce_atm": None, "pe_atm": None},
+        "warnings": []
     }
 
-    # --- Step 2: Strategy based strikes ---
-    action = action.lower()
+    # --- Single Leg CE/PE ---
+    strikes["ce_strike"] = atm + base if "Bull" in bias else atm
+    strikes["pe_strike"] = atm - base if "Bear" in bias else atm
 
-    if "buy ce" in action:
-        result["ce_strike"] = atm + base
+    # --- Bull/Bear Spreads ---
+    if "Bull" in bias:
+        strikes["spread_ce"] = {"buy": atm, "sell": atm + base}
+        strikes["spread_pe"] = {"buy": atm - base, "sell": atm}
+    elif "Bear" in bias:
+        strikes["spread_ce"] = {"buy": atm, "sell": atm + base}
+        strikes["spread_pe"] = {"buy": atm - base, "sell": atm}
 
-    elif "buy pe" in action:
-        result["pe_strike"] = atm - base
+    # --- Iron Condor ---
+    strikes["iron_condor"] = {
+        "sell_ce": atm + base,
+        "buy_ce": atm + 2*base,
+        "sell_pe": atm - base,
+        "buy_pe": atm - 2*base
+    }
 
-    elif "sell ce" in action:
-        result["ce_strike"] = atm + base
+    # --- Butterfly Spread ---
+    strikes["butterfly"] = {
+        "buy_lower": atm - base,
+        "sell": atm,
+        "buy_upper": atm + base
+    }
 
-    elif "sell pe" in action:
-        result["pe_strike"] = atm - base
+    # --- Calendar Spread (simplified as ATM CE/PE) ---
+    strikes["calendar"] = {
+        "ce_atm": atm,
+        "pe_atm": atm
+    }
 
-    elif "strangle" in action:
-        result["ce_strike"] = atm + base
-        result["pe_strike"] = atm - base
-
-    elif "straddle" in action:
-        result["ce_strike"] = atm
-        result["pe_strike"] = atm
-
-    # --- Step 3: Warnings ---
-    if vix < 12 and "sell" in action:
-        result["warnings"].append(
-            "⚠️ Low VIX: Premiums are cheap, selling may underperform"
-        )
-
+    # --- Strangle / Straddle warnings ---
+    if vix < 12:
+        strikes["warnings"].append("⚠️ Low VIX: Premiums are cheap, selling may underperform")
     if vix > 20:
-        result["warnings"].append("⚠️ High VIX: Expect wild swings & large premiums")
-
+        strikes["warnings"].append("⚠️ High VIX: Expect wild swings & large premiums")
     if expiry_type == "WEEKLY":
-        result["warnings"].append("⏰ Weekly expiry: Fast theta decay")
+        strikes["warnings"].append("⏰ Weekly expiry: Fast theta decay")
 
-    return result
+    # --- Step 5: Return JSON-ready dictionary ---
+    return {
+        "score": score,
+        "bias": bias,
+        "primary_action": primary_action,
+        "strategy_list": strategy_list,
+        "strikes": strikes,
+        "vix": vix
+    }
+
