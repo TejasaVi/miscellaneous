@@ -132,7 +132,7 @@ def option_signal_engine(mmi, rsi15, rsi60, pcr, vix, spot, expiry_type="WEEKLY"
     if vix < 12:
         strikes["warnings"].append("⚠️ Low VIX: Premiums are cheap, selling may underperform")
     if vix > 20:
-        strikes["warnings"].append("⚠️ High VIX: Expect wild swings & large premiums")
+        strikes["warnings"].append("⚠️ High VIX: Expect wild swings & high premiums")
     if expiry_type == "WEEKLY":
         strikes["warnings"].append("⏰ Weekly expiry: Fast theta decay")
 

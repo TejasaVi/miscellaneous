@@ -65,6 +65,32 @@ h1 { text-align:center; margin-bottom:25px; }
 .value.bearish { color: #f87171; font-weight:bold; }
 .value.strong-bearish { color: #ff0000; font-weight:bold; }
 
+.warning-card {
+    background: linear-gradient(135deg, #1e1b4b 0%, #2d1b69 100%);
+    border: 1px solid #ef4444;
+    animation: pulse-warning 2s infinite;
+}
+
+@keyframes pulse-warning {
+    0%, 100% { box-shadow: 0 0 10px rgba(239, 68, 68, 0.3); }
+    50% { box-shadow: 0 0 20px rgba(239, 68, 68, 0.6); }
+}
+
+.warning-list {
+    margin-top: 10px;
+    padding: 10px;
+    background: rgba(239, 68, 68, 0.1);
+    border-radius: 6px;
+    border-left: 3px solid #ef4444;
+}
+
+.warning-item {
+    color: #fca5a5;
+    font-size: 14px;
+    margin: 4px 0;
+    padding-left: 8px;
+}
+
 .footer { text-align:center; margin-top:25px; font-size:13px; color:#9ca3af; }
 </style>
 </head>
@@ -143,28 +169,78 @@ h1 { text-align:center; margin-bottom:25px; }
     </div>
 </div>
 
-<!-- ================== Market Bias Tab ================== -->
+<!-- ================== Market Bias Tab (split per strategy) ================== -->
 <div id="marketbias" class="tabcontent">
     <div class="dashboard">
-        <div class="card" id="cardBias" data-sentiment="0">
-            <h2>Market Bias Summary</h2>
-
+        <!-- Main Bias Overview -->
+        <div class="card" id="cardBiasOverview" data-sentiment="0">
+            <h2>Market Bias Overview</h2>
             <div class="row"><span class="label">Bias</span><span id="biasLabel" class="value">--</span></div>
             <div class="row"><span class="label">Score</span><span id="biasScore" class="value">--</span></div>
             <div class="row"><span class="label">Primary Action</span><span id="primaryAction" class="value">--</span></div>
-            <div class="row"><span class="label">Suggested Strategies</span><span id="strategyList" class="value">--</span></div>
+            <div class="row"><span class="label">Strategies</span><span id="strategyList" class="value">--</span></div>
+            <div class="gradient-bar">
+                <div class="gradient-fill"></div>
+                <div class="vertical-indicator" id="cardBiasIndicator"></div>
+            </div>
+        </div>
+
+        <!-- Strikes & Spreads -->
+        <div class="card" id="cardStrikes" data-sentiment="0">
+            <h2>Strikes & Spreads</h2>
             <div class="row"><span class="label">CE Strike</span><span id="ceStrike" class="value">--</span></div>
             <div class="row"><span class="label">PE Strike</span><span id="peStrike" class="value">--</span></div>
             <div class="row"><span class="label">Spread CE</span><span id="spreadCE" class="value">--</span></div>
             <div class="row"><span class="label">Spread PE</span><span id="spreadPE" class="value">--</span></div>
-            <div class="row"><span class="label">Iron Condor</span><span id="ironCondor" class="value">--</span></div>
-            <div class="row"><span class="label">Butterfly</span><span id="butterfly" class="value">--</span></div>
-            <div class="row"><span class="label">Calendar</span><span id="calendar" class="value">--</span></div>
-            <div class="row"><span class="label">Warnings</span><span id="strikeWarnings" class="value">--</span></div>
-
             <div class="gradient-bar">
-                <div class="gradient-fill"></div>
-                <div class="vertical-indicator" id="cardBiasIndicator"></div>
+                <div class="gradient-fill" style="width:50% !important;"></div>
+                <div class="vertical-indicator" style="left:50% !important;"></div>
+            </div>
+        </div>
+
+        <!-- Iron Condor card -->
+        <div class="card" id="cardIronCondor" data-sentiment="0">
+            <h2>Iron Condor</h2>
+            <div class="row"><span class="label">Sell CE</span><span id="ironCondorSellCE" class="value">--</span></div>
+            <div class="row"><span class="label">Buy CE</span><span id="ironCondorBuyCE" class="value">--</span></div>
+            <div class="row"><span class="label">Sell PE</span><span id="ironCondorSellPE" class="value">--</span></div>
+            <div class="row"><span class="label">Buy PE</span><span id="ironCondorBuyPE" class="value">--</span></div>
+            <div class="gradient-bar">
+                <div class="gradient-fill" style="width:50% !important;"></div>
+                <div class="vertical-indicator" style="left:50% !important;"></div>
+            </div>
+        </div>
+
+        <!-- Butterfly card -->
+        <div class="card" id="cardButterfly" data-sentiment="0">
+            <h2>Butterfly</h2>
+            <div class="row"><span class="label">Buy Lower</span><span id="butterflyBuyLower" class="value">--</span></div>
+            <div class="row"><span class="label">Sell</span><span id="butterflySell" class="value">--</span></div>
+            <div class="row"><span class="label">Buy Upper</span><span id="butterflyBuyUpper" class="value">--</span></div>
+            <div class="gradient-bar">
+                <div class="gradient-fill" style="width:50% !important;"></div>
+                <div class="vertical-indicator" style="left:50% !important;"></div>
+            </div>
+        </div>
+
+        <!-- Calendar card -->
+        <div class="card" id="cardCalendar" data-sentiment="0">
+            <h2>Calendar Spread</h2>
+            <div class="row"><span class="label">ATM CE</span><span id="calendarCE" class="value">--</span></div>
+            <div class="row"><span class="label">ATM PE</span><span id="calendarPE" class="value">--</span></div>
+            <div class="gradient-bar">
+                <div class="gradient-fill" style="width:50% !important;"></div>
+                <div class="vertical-indicator" style="left:50% !important;"></div>
+            </div>
+        </div>
+
+        <!-- Separate Warnings Card -->
+        <div class="card warning-card" id="cardWarnings">
+            <h2>⚠️ Strike Warnings</h2>
+            <div id="warningsContainer">
+                <div class="warning-list" id="strikeWarningsList">
+                    <div class="warning-item">No warnings</div>
+                </div>
             </div>
         </div>
     </div>
@@ -200,6 +276,7 @@ function applyGradientBar(cardId, sentiment){
     const val = sentimentValue(sentiment);
     const fill = document.querySelector(`#${cardId} .gradient-fill`);
     const indicator = document.getElementById(`${cardId}Indicator`);
+    if (!fill || !indicator) return;
     const widthPercent = 50 + val * 25; // -2 → 0%, 0 → 50%, 2 → 100%
     fill.style.width = widthPercent + "%";
     indicator.style.left = widthPercent + "%";
@@ -207,6 +284,7 @@ function applyGradientBar(cardId, sentiment){
 
 function applySentimentColor(elementId, sentiment){
     const el = document.getElementById(elementId);
+    if (!el) return;
     el.className = "value " + sentimentClass(sentiment);
     el.innerText = sentiment ?? "--";
 }
@@ -236,6 +314,19 @@ function applyMMIPointer(value){
     } else {
         indicator.style.left = "50%";
     }
+}
+
+// Update warnings display
+function updateWarnings(warnings) {
+    const container = document.getElementById("strikeWarningsList");
+    if (!container) return;
+    if (!warnings || warnings.length === 0) {
+        container.innerHTML = '<div class="warning-item" style="color:#9ca3af;">No warnings</div>';
+        return;
+    }
+    container.innerHTML = warnings.map(warning => 
+        `<div class="warning-item">${warning}</div>`
+    ).join('');
 }
 
 // Tabs
@@ -295,17 +386,19 @@ async function fetchIndicators(){
     } catch(e){ console.error("Indicators fetch failed", e);}
 }
 
-// Fetch market bias
+// Fetch market bias with split strategy cards
 async function fetchMarketBias(){
     try{
         const res = await fetch("/api/marketbias");
         const data = await res.json();
 
+        // Overview card
         applySentimentColor("biasLabel", data.bias);
         document.getElementById("biasScore").innerText = data.score ?? "--";
         document.getElementById("primaryAction").innerText = data.primary_action ?? "--";
         document.getElementById("strategyList").innerText = (data.strategy_list||[]).join(", ") || "--";
 
+        // Strikes & Spreads
         const strikes = data.strikes || {};
         document.getElementById("ceStrike").innerText = strikes.ce_strike ?? "--";
         document.getElementById("peStrike").innerText = strikes.pe_strike ?? "--";
@@ -313,23 +406,37 @@ async function fetchMarketBias(){
             `Buy: ${strikes.spread_ce.buy}, Sell: ${strikes.spread_ce.sell}` : "--";
         document.getElementById("spreadPE").innerText = strikes.spread_pe ? 
             `Buy: ${strikes.spread_pe.buy}, Sell: ${strikes.spread_pe.sell}` : "--";
-        document.getElementById("ironCondor").innerText = strikes.iron_condor ? 
-            `SellCE:${strikes.iron_condor.sell_ce}, BuyCE:${strikes.iron_condor.buy_ce}, SellPE:${strikes.iron_condor.sell_pe}, BuyPE:${strikes.iron_condor.buy_pe}` : "--";
-        document.getElementById("butterfly").innerText = strikes.butterfly ? 
-            `BuyLower:${strikes.butterfly.buy_lower}, Sell:${strikes.butterfly.sell}, BuyUpper:${strikes.butterfly.buy_upper}` : "--";
-        document.getElementById("calendar").innerText = strikes.calendar ? 
-            `CE:${strikes.calendar.ce_atm}, PE:${strikes.calendar.pe_atm}` : "--";
 
-        document.getElementById("strikeWarnings").innerText = (strikes.warnings||[]).join(", ") || "--";
+        // Iron Condor
+        const ic = strikes.iron_condor || {};
+        document.getElementById("ironCondorSellCE").innerText = ic.sell_ce ?? "--";
+        document.getElementById("ironCondorBuyCE").innerText = ic.buy_ce ?? "--";
+        document.getElementById("ironCondorSellPE").innerText = ic.sell_pe ?? "--";
+        document.getElementById("ironCondorBuyPE").innerText = ic.buy_pe ?? "--";
 
+        // Butterfly
+        const bf = strikes.butterfly || {};
+        document.getElementById("butterflyBuyLower").innerText = bf.buy_lower ?? "--";
+        document.getElementById("butterflySell").innerText = bf.sell ?? "--";
+        document.getElementById("butterflyBuyUpper").innerText = bf.buy_upper ?? "--";
+
+        // Calendar
+        const cal = strikes.calendar || {};
+        document.getElementById("calendarCE").innerText = cal.ce_atm ?? "--";
+        document.getElementById("calendarPE").innerText = cal.pe_atm ?? "--";
+
+        // Warnings
+        const warnings = strikes.warnings || [];
+        updateWarnings(warnings);
+
+        // Bias indicator
         const indicator = document.getElementById("cardBiasIndicator");
         const pct = Math.max(0, Math.min(100, data.score ?? 50));
         indicator.style.left = pct + "%";
-
-        const fill = document.querySelector("#cardBias .gradient-fill");
+        const fill = document.querySelector("#cardBiasOverview .gradient-fill");
         fill.style.width = pct + "%";
 
-    } catch(e){ console.error("Market bias fetch failed", e);}
+    } catch(e){ console.error("Market bias fetch failed", e); }
 }
 
 // Refresh
