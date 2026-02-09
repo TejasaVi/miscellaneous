@@ -1,90 +1,31 @@
 from flask import Blueprint, jsonify
 from tickersnap.mmi import MarketMoodIndex
 
-
-def mmi_action(zone):
-    """
-    Returns actionable market suggestion based on MMI zone
-    """
-    zone = zone.lower()
-
-    if "extreme fear" in zone:
-        return {
-            "bias": "Bullish (Reversal)",
-            "action": "Accumulate longs slowly, prefer spreads",
-            "strategies": [
-                "Bull Put Spread",
-                "Call Calendar",
-                "Deep ITM Calls (small size)"
-            ]
-        }
-
-    elif "fear" in zone:
-        return {
-            "bias": "Bullish",
-            "action": "Buy on dips, avoid aggressive shorts",
-            "strategies": [
-                "Bull Call Spread",
-                "Ratio Call Spread"
-            ]
-        }
-
-    elif "neutral" in zone:
-        return {
-            "bias": "Sideways",
-            "action": "Sell premium or trade range",
-            "strategies": [
-                "Iron Condor",
-                "Calendar Spread",
-                "Short Strangle (hedged)"
-            ]
-        }
-
-    elif "greed" in zone and "extreme" not in zone:
-        return {
-            "bias": "Bullish (Late trend)",
-            "action": "Ride trend with caution, tighten stop-loss",
-            "strategies": [
-                "Call Spread",
-                "Buy Calls on pullback"
-            ]
-        }
-
-    elif "extreme greed" in zone:
-        return {
-            "bias": "Cautious / Bearish",
-            "action": "Book profits, hedge longs, avoid fresh buying",
-            "strategies": [
-                "Bear Call Spread",
-                "Put Calendar",
-                "Protective Puts"
-            ]
-        }
-
-    return {
-        "bias": "Unknown",
-        "action": "Stay cautious",
-        "strategies": []
-    }
-
+def mmi_action_logic(value):
+    if value < 25:
+        return "Aggressive buying, add long positions"
+    elif value < 40:
+        return "Buy on dips, positional longs allowed"
+    elif value < 55:
+        return "Neutral zone, wait & watch, option selling preferred"
+    elif value < 70:
+        return "Reduce longs, hedge positions"
+    else:
+        return "Book profits, avoid fresh longs, consider shorts"
 
 def fetch_mmi():
     mmi = MarketMoodIndex()
     current = mmi.get_current_mmi()
 
-    action_info = mmi_action(current.zone.value)
+    action = mmi_action_logic(current.value)
 
     return {
-        "value": current.value,
-        "zone": current.zone.value,
-        "bias": action_info["bias"],
-        "action": action_info["action"],
-        "preferred_strategies": action_info["strategies"]
+        "value": round(current.value, 2),
+        "zone": current.zone.value,   # original zone
+        "action": action              # YOUR strategy layer
     }
 
-
 mmi_bp = Blueprint("mmi", __name__)
-
 
 @mmi_bp.route("/mmi", methods=["GET"])
 def mmi_check():
