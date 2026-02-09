@@ -7,7 +7,7 @@ from app.api.pcr import pcr_bp
 from app.api.rsi import rsi_bp
 from app.api.indices import indices_bp
 from app.api.market_bias import marketbias_bp
-
+from app.api.oi_change import oi_change_pcr_bp
 
 def create_app(config_class=Config):
     app = Flask(__name__)
@@ -24,5 +24,5 @@ def create_app(config_class=Config):
     app.register_blueprint(mmi_bp, url_prefix="/api")
     app.register_blueprint(marketbias_bp, url_prefix="/api")
     app.register_blueprint(indices_bp, url_prefix="/api")
-
+    app.register_blueprint(oi_change_pcr_bp, url_prefix="/api")
     return app

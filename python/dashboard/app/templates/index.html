@@ -142,6 +142,17 @@ h1 { text-align:center; margin-bottom:25px; }
             </div>
         </div>
 
+		<!-- OI CHANGE PCR -->
+		<div class="card" id="cardOIChangePCR" data-sentiment="0">
+			<h2>OI Change PCR</h2>
+				<div class="row"><span class="label">PCR</span><span id="oiChangePcr" class="value">--</span></div>
+				<div class="row"><span class="label">Sentiment</span><span id="oiChangePcrSentiment" class="value">--</span></div>
+				<div class="row"><span class="label">Action</span><span id="oiChangePcrAction" class="value">--</span></div>
+				<div class="gradient-bar">
+					<div class="gradient-fill"></div>
+					<div class="vertical-indicator" id="cardOIChangePCRIndicator"></div>
+				</div>
+		</div>
         <!-- RSI -->
         <div class="card" id="cardRSI" data-sentiment="0">
             <h2>RSI</h2>
@@ -329,6 +340,7 @@ function updateWarnings(warnings) {
     ).join('');
 }
 
+
 // Tabs
 document.querySelectorAll(".tab").forEach(tab=>{
     tab.addEventListener("click",()=>{
@@ -386,6 +398,25 @@ async function fetchIndicators(){
     } catch(e){ console.error("Indicators fetch failed", e);}
 }
 
+async function fetchOIChangePCR(){
+    try{
+        const res = await fetch("/api/oi-change");
+        const data = await res.json();
+
+        document.getElementById("oiChangePcr").innerText =
+            data.oi_change_pcr?.toFixed(2) ?? "--";
+
+        applySentimentColor("oiChangePcrSentiment", data.sentiment);
+        document.getElementById("oiChangePcrAction").innerText =
+            data.action ?? "--";
+
+        applyGradientBar("cardOIChangePCR", data.sentiment);
+
+    } catch(e){
+        console.error("OI Change PCR fetch failed", e);
+    }
+}
+
 // Fetch market bias with split strategy cards
 async function fetchMarketBias(){
     try{
@@ -441,14 +472,17 @@ async function fetchMarketBias(){
 
 // Refresh
 async function refreshDashboard(){
-    await Promise.all([fetchIndicators(), fetchMarketBias()]);
+    await Promise.all([
+        fetchIndicators(),
+        fetchMarketBias(),
+        fetchOIChangePCR()
+    ]);
     console.log("Dashboard refreshed", new Date().toLocaleTimeString());
 }
 
 refreshDashboard();
-setInterval(refreshDashboard, 300000);
+setInterval(refreshDashboard, 1000);
 </script>
 
 </body>
 </html>
-
