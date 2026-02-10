@@ -5,17 +5,17 @@ pcr_bp = Blueprint("pcr", __name__)
 
 PCR_INTERPRETATION = {
     "extreme_bearish": {
-        "pcr_range": (0.0, 0.6),
-        "sentiment": "Extremely Bearish (Overbought)",
+        "pcr_range": (0.0, 0.5),
+        "sentiment": "Extremely Bearish (OverSold)",
         "action": "Avoid longs, look for PUT buying or CALL writing"
     },
     "bearish": {
-        "pcr_range": (0.6, 0.8),
+        "pcr_range": (0.5, 0.7),
         "sentiment": "Bearish",
         "action": "Sell CALL spreads or wait for reversal"
     },
     "neutral": {
-        "pcr_range": (0.8, 1.0),
+        "pcr_range": (0.7, 1.0),
         "sentiment": "Neutral",
         "action": "Market is rangebound, wait for breakout"
     },
@@ -26,7 +26,7 @@ PCR_INTERPRETATION = {
     },
     "extreme_bullish": {
         "pcr_range": (1.3, float("inf")),
-        "sentiment": "Extremely Bullish (Oversold)",
+        "sentiment": "Extremely Bullish (OverBought)",
         "action": "Aggressive CALL buying or PUT writing"
     }
 }
