@@ -5,6 +5,7 @@ from app.api.mmi import fetch_mmi
 from app.api.pcr import get_current_expiry_pcr
 from app.api.rsi import get_nifty_rsi
 from app.services.market_bias import option_signal_engine
+from app.utils.nse_client import NSEClient
 
 
 def define_market_bias():
@@ -22,8 +23,11 @@ def define_market_bias():
     rsi60 = float(rsi60_data["rsi_value"].iloc[0])
     rsi15 = float(rsi15_data["rsi_value"].iloc[0])
 
+    nse_client = NSEClient()
+    data = nse_client.fetch_indices()
     # ---- Bias Engine ----
-    nifty_spot = 25642
+    nifty_spot = data['NIFTY50']
+
     signal = option_signal_engine(
         spot=nifty_spot,
         mmi=mmi_zone,
