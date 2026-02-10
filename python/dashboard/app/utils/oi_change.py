@@ -1,27 +1,27 @@
 from pnsea import NSE
 OI_CHANGE_PCR_INTERPRETATION = {
     "extreme_bearish": {
-        "pcr_range": (0.0, 0.6),
+        "pcr_range": (0.0, 0.5),
         "sentiment": "Strong Bearish Build-up",
         "action": "Short rallies, Buy PUTs"
     },
     "bearish": {
-        "pcr_range": (0.6, 0.8),
+        "pcr_range": (0.5, 0.7),
         "sentiment": "Bearish Build-up",
         "action": "Sell CALLs or CALL spreads"
     },
     "neutral": {
-        "pcr_range": (0.8, 1.1),
+        "pcr_range": (0.7, 1),
         "sentiment": "Neutral / No Clear Build-up",
         "action": "Avoid trades, wait for confirmation"
     },
     "bullish": {
-        "pcr_range": (1.1, 1.4),
+        "pcr_range": (1, 1.3),
         "sentiment": "Bullish Build-up",
         "action": "Buy CALLs or sell PUTs"
     },
     "extreme_bullish": {
-        "pcr_range": (1.4, float("inf")),
+        "pcr_range": (1.3, float("inf")),
         "sentiment": "Strong Bullish Build-up",
         "action": "Aggressive CALL buying / PUT writing"
     }
@@ -70,3 +70,4 @@ def get_current_expiry_oi_change_pcr():
             "error": "OI Change PCR calculation failed",
             "details": str(e)
         }
+
